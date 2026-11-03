@@ -1,6 +1,7 @@
 # Global Ban — Phân tích suy thoái và phục hồi thảm thực vật
 
-Đồ án cuối kỳ môn **CSC17104 – Programming for Data Science**, Trường Đại học Khoa học Tự nhiên, ĐHQG-HCM.
+> Đồ án cuối kỳ môn **CSC17104 – Programming for Data Science**, Trường Đại học Khoa học Tự nhiên, ĐHQG-HCM.
+> Drive đồ án: https://drive.google.com/drive/folders/1wzgOSg2hi_MEvgz5dCnEI01W2bJNMnE6?usp=drive_link
 
 ## Mục lục
 
