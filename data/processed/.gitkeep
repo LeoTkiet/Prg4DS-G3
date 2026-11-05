@@ -1,0 +1,3 @@
+# Thư mục lưu trữ các bảng dữ liệu phẳng (flattened/normalized) sau tiền xử lý.
+# Các file dữ liệu lớn sẽ được Git bỏ qua theo cấu hình trong .gitignore.
+
