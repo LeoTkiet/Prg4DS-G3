@@ -14,8 +14,3 @@ dependencies:
   - scikit-learn
   - pyarrow
   - tqdm
-
-  - seaborn
-  - scikit-learn
-  - pyarrow
-  - tqdm
