@@ -1,20 +1,18 @@
 name: ds-env
+
 channels:
-  - defaults
   - conda-forge
+  - defaults
+
 dependencies:
   - python=3.10
   - jupyter
   - jupyterlab
+  - ipykernel
   - numpy
   - pandas
   - scipy
   - matplotlib
-  - seaborn
-  - scikit-learn
-  - pyarrow
-  - tqdm
-
   - seaborn
   - scikit-learn
   - pyarrow
