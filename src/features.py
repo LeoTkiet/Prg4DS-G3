@@ -5,8 +5,13 @@ Chức năng dự kiến:
 - Xây dựng ma trận đặc trưng (Feature Matrix X) và biến mục tiêu (Target y) cho bài toán ML (Q6),
   đảm bảo loại bỏ hoàn toàn các biến gây rò rỉ dữ liệu (Data Leakage) như `outcome`, `treated_for_ae`.
 - Chia tập dữ liệu theo thời gian (Time-based Split):
+<<<<<<< Updated upstream
   + Tập Huấn luyện & Kiểm định (Train/Val): 2025 Q1 -> 2025 Q4.
   + Tập Kiểm thử thực tế (Out-of-Time Test): 2026 Q1 & Q2.
+=======
+  + Tập Huấn luyện & Kiểm định (Train/Val): 2020 Q1 -> 2025 Q4.
+  + Tập Kiểm thử thực tế (Out-of-Time Test): 2026 Q1.
+>>>>>>> Stashed changes
 """
 
 from typing import Tuple
@@ -39,8 +44,13 @@ def temporal_train_test_split(
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     Chia dữ liệu theo mốc thời gian:
+<<<<<<< Updated upstream
     - Train/Validation: 2025 Q1 - Q4
     - Test (Out-of-Time): 2026 (Q1 & Q2)
+=======
+    - Train/Validation: 2020 - 2025
+    - Test (Out-of-Time): 2026 (Q1)
+>>>>>>> Stashed changes
     (Skeleton - sẽ triển khai ở Giai đoạn 4 cho Q6).
     """
     raise NotImplementedError("Sẽ triển khai ở Giai đoạn 4 (Machine Learning).")

@@ -1,3 +1,7 @@
+<<<<<<< Updated upstream
 # Đặt các file JSON/ZIP tải từ openFDA (2025 Q1 - 2026 Q2) vào thư mục này.
+=======
+# Đặt các file JSON/ZIP tải từ openFDA (2020 Q1 - 2026 Q1) vào thư mục này.
+>>>>>>> Stashed changes
 # Các file dữ liệu lớn sẽ được Git bỏ qua theo cấu hình trong .gitignore.
 
