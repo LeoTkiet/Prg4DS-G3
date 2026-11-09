@@ -35,6 +35,14 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
   - Chỉnh `environment.yml` (bỏ package trùng lặp, đưa `conda-forge` lên trước, thêm `ipykernel`) và mở rộng mục 7 của README thành các bước cài đặt/kiểm tra/troubleshooting.
   - Các thay đổi được nhóm kiểm tra lại bằng `git diff` trước khi commit.
 
+### Lần 4 — Xác minh giấy phép CC0, tác giả, phương pháp thu thập, hạn chế dữ liệu và công trình công khai liên quan (2026-11-09)
+- **Thành viên:** Huỳnh Tuấn Kiệt (24120356)
+- **Công cụ:** Google Antigravity
+- **Đã hỏi gì:** Xác minh giấy phép CC0 1.0 Universal, tác giả/tổ chức phát hành (FDA CVM), nguồn gốc (openFDA manifest & API), phương pháp thu thập thực tế của dữ liệu Cảnh giác dược Thú y (thay cho mô tả remote sensing + field survey của đề xuất cũ), quần thể (population), phạm vi thời gian (2025 Q1–Q4 & 2026 Q1), các hạn chế/thiên lệch (limitations/biases) và liệt kê các công trình/notebook/repo công khai liên quan kèm điểm khác biệt của đồ án nhóm.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - Đối chiếu trực tiếp với trang giấy phép (`open.fda.gov/license`), điều khoản sử dụng (`open.fda.gov/terms`) và quy trình báo cáo của FDA CVM (báo cáo bắt buộc 21 CFR 514.80 qua eSubmitter/HL7 ICSR và báo cáo tự nguyện qua Form FDA 1932a / Safety Reporting Portal).
+  - Cập nhật chi tiết Mục 2 (`2.1`–`2.5`) trong `README.md` và Mục 1 (`1.1`–`1.6`) trong `notebooks/01_collection_exploration.ipynb`, bao gồm bảng đối sánh 4 nhóm công trình/repo công khai (`openFDA Explorer`, `FDA/openfda` & `VetClaw`, bài báo `arXiv:2510.01520`, và các nghiên cứu trên *Frontiers in Veterinary Science*) với hướng tiếp cận của nhóm.
+
 ---
 
 ## Mẫu ghi nhận cho các phiên tiếp theo
