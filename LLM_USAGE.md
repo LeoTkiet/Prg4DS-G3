@@ -18,8 +18,15 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
 - **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
   - Sử dụng cấu trúc thư mục (`data/raw/`, `data/processed/`, `src/`, `notebooks/`), các file khung (`01_collection_exploration.ipynb`, `02_analysis.ipynb`, `03_ml_question.ipynb`) và bản mô tả kế hoạch vận hành trong `README.md`.
   - Nhóm sẽ tự tải dữ liệu thực tế từ cổng openFDA, tự viết mã xử lý JSON lồng nhau, chạy thực nghiệm, kiểm chứng số liệu và cập nhật kết quả phân tích.
-
-### Lần 2 — Rút gọn phạm vi dữ liệu & chuẩn hóa tài liệu cài đặt (2026-11-07)
+### Lần 2 — Soạn thảo script tải dữ liệu, module nạp/làm phẳng JSON và Data Dictionary v0 (2026-11-07)
+- **Thành viên:** Trần Ngô Uyên Nhi
+- **Công cụ:** Claude (Anthropic)
+- **Đã hỏi gì:** Nhờ soạn bản nháp `src/download_data.py` (tải các quý 2025 Q1–Q4 và 2026 Q1 qua manifest openFDA), `src/data_loader.py` (đọc JSON/ZIP, làm phẳng thành 4 bảng `reports`, `drugs`, `reactions`, `outcomes`, loại trùng `unique_aer_id_number` giữa các quý) và `data_dictionary.md` v0.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - Tự đọc và chạy từng hàm để hiểu luồng xử lý: vì sao phải đổi tên file theo quý (tên gốc các quý trùng nhau, sẽ ghi đè), vì sao giữ phiên bản ở quý muộn nhất khi trùng id, vì sao giữ nguyên dạng chuỗi và để ép kiểu ở notebook.
+  - Kiểm chứng đầu ra bằng số liệu thật: so khớp số bản ghi giữa `meta.total`, `len(results)` và manifest; đối chiếu SHA-256 và `last_updated` trong `MANIFEST.json`; kiểm tra số dòng trước/sau khi loại trùng, khóa ngoại của 3 bảng con.
+  - Đối chiếu Data Dictionary với dữ liệu thực tế (kiểm tra tên cột, kiểu dữ liệu, tỷ lệ khuyết) và sửa các chỗ không khớp, ví dụ tên cột trong dictionary khác tên cột do `data_loader.py` sinh ra. Dictionary hiện đánh dấu v0 và sẽ cập nhật sau EDA.
+### Lần 3 — Rút gọn phạm vi dữ liệu & chuẩn hóa tài liệu cài đặt (2026-11-07)
 - **Thành viên:** Đinh Công Khang (24120332) — đại diện nhóm tổng hợp.
 - **Công cụ:** OpenCode (AI coding agent).
 - **Đã hỏi gì:** Điều chỉnh toàn bộ kế hoạch đồ án từ phạm vi nhiều năm xuống chỉ còn 4 quý năm 2025 để phân tích/huấn luyện, giữ nguyên 2026 Q1 làm tập kiểm thử ngoài thời gian; đồng thời rà soát `README.md` và `environment.yml` (cài môi trường, hướng dẫn dữ liệu, package trùng lặp).
