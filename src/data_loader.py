@@ -7,6 +7,7 @@ Chức năng:
 - Chuẩn hóa thành 4 bảng quan hệ phẳng liên kết qua `unique_aer_id_number`:
   1. `reports`: Thông tin cấp báo cáo (id, ngày nhận, ngày khởi phát, người báo cáo, serious_ae, treated_for_ae, type_of_information, animal demographics...).
   2. `drugs`: Danh sách thuốc nhúng trong `drug[]`, kèm cột `active_ingredients` (tên hoạt chất nối bằng ';').
+     các cột liều `dose_*` và tần suất `frequency_value`, `frequency_unit` (làm phẳng từ `dose` và `frequency_of_administration`).
   3. `reactions`: Danh sách phản ứng bất lợi theo thuật ngữ VeDDRA (explode từ `reaction[]`).
   4. `outcomes`: Kết cục y khoa của vật nuôi (explode từ `outcome[]`).
 Mọi giá trị giữ nguyên dạng chuỗi như file gốc; ép kiểu (ngày, số) làm ở bước tiền xử lý trong notebook.
