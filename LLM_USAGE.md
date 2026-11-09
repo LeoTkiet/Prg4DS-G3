@@ -14,12 +14,10 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
 ### Lần 1 — Khởi tạo cấu trúc thư mục & Kế hoạch vận hành đồ án (2026-11-05)
 - **Thành viên:** Huỳnh Tuấn Kiệt
 - **Công cụ:** Google Antigravity (Gemini)
-- **Đã hỏi gì:** Yêu cầu tái cấu trúc thư mục dự án theo đúng chuẩn Mục 4 của đề cương môn học (`CSC17104`), chuyển đổi từ báo cáo sơ bộ 1 file sang kế hoạch vận hành dữ liệu **OpenFDA Animal & Veterinary Adverse Events** giai đoạn **2020–2025** (dùng để phân tích lịch sử và huấn luyện mô hình) và **2026 Q1–Q2** (dùng làm tập kiểm thử thực tế Out-of-Time Test), đồng thời chuẩn hóa 6 câu hỏi nghiên cứu đáp ứng tiêu chí độ sâu `D1–D6` và yêu cầu bài toán ML.
+- **Đã hỏi gì:** Yêu cầu tái cấu trúc thư mục dự án theo đúng chuẩn Mục 4 của đề cương môn học (`CSC17104`), chuyển đổi từ báo cáo sơ bộ 1 file sang kế hoạch vận hành dữ liệu **OpenFDA Animal & Veterinary Adverse Events** giai đoạn **2025 (Q1–Q4)** (dùng để phân tích và huấn luyện mô hình) và **2026 Q1** (dùng làm tập kiểm thử thực tế Out-of-Time Test), đồng thời chuẩn hóa 6 câu hỏi nghiên cứu đáp ứng tiêu chí độ sâu `D1–D6` và yêu cầu bài toán ML.
 - **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
   - Sử dụng cấu trúc thư mục (`data/raw/`, `data/processed/`, `src/`, `notebooks/`), các file khung (`01_collection_exploration.ipynb`, `02_analysis.ipynb`, `03_ml_question.ipynb`) và bản mô tả kế hoạch vận hành trong `README.md`.
   - Nhóm sẽ tự tải dữ liệu thực tế từ cổng openFDA, tự viết mã xử lý JSON lồng nhau, chạy thực nghiệm, kiểm chứng số liệu và cập nhật kết quả phân tích.
-
-
 ### Lần 2 — Soạn thảo script tải dữ liệu, module nạp/làm phẳng JSON và Data Dictionary v0 (2026-11-07)
 - **Thành viên:** Trần Ngô Uyên Nhi
 - **Công cụ:** Claude (Anthropic)
@@ -28,6 +26,14 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
   - Tự đọc và chạy từng hàm để hiểu luồng xử lý: vì sao phải đổi tên file theo quý (tên gốc các quý trùng nhau, sẽ ghi đè), vì sao giữ phiên bản ở quý muộn nhất khi trùng id, vì sao giữ nguyên dạng chuỗi và để ép kiểu ở notebook.
   - Kiểm chứng đầu ra bằng số liệu thật: so khớp số bản ghi giữa `meta.total`, `len(results)` và manifest; đối chiếu SHA-256 và `last_updated` trong `MANIFEST.json`; kiểm tra số dòng trước/sau khi loại trùng, khóa ngoại của 3 bảng con.
   - Đối chiếu Data Dictionary với dữ liệu thực tế (kiểm tra tên cột, kiểu dữ liệu, tỷ lệ khuyết) và sửa các chỗ không khớp, ví dụ tên cột trong dictionary khác tên cột do `data_loader.py` sinh ra. Dictionary hiện đánh dấu v0 và sẽ cập nhật sau EDA.
+### Lần 3 — Rút gọn phạm vi dữ liệu & chuẩn hóa tài liệu cài đặt (2026-11-07)
+- **Thành viên:** Đinh Công Khang (24120332) — đại diện nhóm tổng hợp.
+- **Công cụ:** OpenCode (AI coding agent).
+- **Đã hỏi gì:** Điều chỉnh toàn bộ kế hoạch đồ án từ phạm vi nhiều năm xuống chỉ còn 4 quý năm 2025 để phân tích/huấn luyện, giữ nguyên 2026 Q1 làm tập kiểm thử ngoài thời gian; đồng thời rà soát `README.md` và `environment.yml` (cài môi trường, hướng dẫn dữ liệu, package trùng lặp).
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - Nhóm thống nhất loại bỏ hoàn toàn các năm trước 2025; cập nhật đồng bộ README, docstring trong `src/`, 3 notebook và mục lục.
+  - Chỉnh `environment.yml` (bỏ package trùng lặp, đưa `conda-forge` lên trước, thêm `ipykernel`) và mở rộng mục 7 của README thành các bước cài đặt/kiểm tra/troubleshooting.
+  - Các thay đổi được nhóm kiểm tra lại bằng `git diff` trước khi commit.
 
 ---
 
