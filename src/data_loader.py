@@ -150,11 +150,13 @@ def load_and_flatten_quarter(file_path: str | Path) -> Dict[str, pd.DataFrame]:
         # --- drugs: mỗi thuốc một dòng, hoạt chất nối bằng ';' ---
         for i, d in enumerate(r.get("drug", []) or []):
             drow = {k: v for k, v in d.items()
-                    if k not in ("dose", "manufacturer", "active_ingredients")}
+                    if k not in ("dose", "manufacturer", "active_ingredients",
+                                  "frequency_of_administration")}
             drow.update({
                 KEY: rid,
                 "drug_idx": i,
                 **_flat("dose", d.get("dose")),
+                **_flat("frequency", d.get("frequency_of_administration")),
                 "manufacturer_name": (d.get("manufacturer") or {}).get("name"),
                 "active_ingredients": ";".join(
                     n for ai in (d.get("active_ingredients") or []) if (n := ai.get("name"))),
