@@ -1,118 +1,123 @@
-# Data Dictionary v0 — OpenFDA Animal & Veterinary Adverse Events
+# Data Dictionary v1 — OpenFDA Animal & Veterinary Adverse Events
 
-> **Phiên bản:** v0 (initial draft)  
+> **Phiên bản:** v1 (đồng bộ hoàn toàn với schema CSV đầu ra của `src/data_loader.py`)  
 > **Nguồn dữ liệu:** [openFDA Animal & Veterinary Adverse Events](https://open.fda.gov/data/downloads/)  
 > **API Docs:** [https://open.fda.gov/apis/animalandveterinary/event/](https://open.fda.gov/apis/animalandveterinary/event/)  
 > **Giấy phép:** Creative Commons CC0 1.0 Universal  
 > **Phạm vi:** 2025 Q1–Q4 + 2026 Q1  
-> **Ngày thu thập và khởi tạo:** Thu thập ngày 06/11/2026 (`2026-11-06T16:53:03Z`), khởi tạo tài liệu ngày 07/11/2026 (trên phiên bản dữ liệu openFDA cập nhật ngày `2026-11-02`).
+> **Ngày thu thập và khởi tạo:** Thu thập ngày 06/11/2026 (`2026-11-06T16:53:03Z`), cập nhật tài liệu ngày 10/11/2026 (trên phiên bản dữ liệu openFDA cập nhật ngày `2026-11-02`).
 
 ---
 
-## 1. Bảng `reports` — Thông tin cấp báo cáo (Report-level)
+## 1. Bảng `reports.csv` — Thông tin cấp báo cáo (Report-level)
 
 Mỗi dòng = 1 báo cáo duy nhất. Khóa chính: `unique_aer_id_number`.
 
-| # | Tên cột | Kiểu dữ liệu | JSON path gốc | Mô tả | Ghi chú |
+| # | Tên cột (`reports.csv`) | Kiểu dữ liệu | JSON path / Nguồn gốc | Mô tả | Ghi chú |
 |---|---------|---------------|----------------|-------|---------|
-| 1 | `unique_aer_id_number` | `str` | `unique_aer_id_number` | Mã báo cáo duy nhất (Adverse Event Report ID) | **Primary Key** |
-| 2 | `report_id` | `str` | `report_id` | Mã báo cáo nội bộ FDA | Có thể trùng nếu cùng report được cập nhật |
-| 3 | `original_receive_date` | `str (YYYYMMDD)` | `original_receive_date` | Ngày FDA nhận báo cáo lần đầu | Cần parse → datetime |
+| 1 | `unique_aer_id_number` | `str` | `unique_aer_id_number` | Mã định danh báo cáo sự kiện bất lợi duy nhất (Adverse Event Report ID) | **Primary Key** (khóa duy nhất để khử trùng lặp) |
+| 2 | `report_id` | `str` | `report_id` | Mã số hồ sơ/đơn đăng ký thuốc NADA/ANADA của FDA (vd: `N141302`, `N141272`) | Nhiều báo cáo khác nhau có cùng `report_id` — **tuyệt đối không dùng để dedupe** |
+| 3 | `original_receive_date` | `str (YYYYMMDD)` | `original_receive_date` | Ngày FDA nhận báo cáo lần đầu | Cần parse → `datetime` ở bước tiền xử lý |
 | 4 | `onset_date` | `str (YYYYMMDD)` | `onset_date` | Ngày khởi phát phản ứng bất lợi | Có thể NULL; dùng tính `reporting_delay_days` |
-| 5 | `year` | `int` | *(derived)* | Năm trích từ `original_receive_date` | **Biến dẫn xuất** |
-| 6 | `quarter` | `str` | *(derived)* | Quý theo format `YYYYqN` | **Biến dẫn xuất** |
-| 7 | `primary_reporter` | `str` | `primary_reporter` | Đối tượng báo cáo chính (Veterinarian, Animal Owner, Other Health Professional, ...) | Categorical |
-| 8 | `secondary_reporter` | `str` | `secondary_reporter` | Đối tượng báo cáo phụ | Thường NULL |
-| 9 | `type_of_information` | `str` | `type_of_information` | Loại thông tin báo cáo: Safety Issue, Lack Of Expected Effectiveness, cả hai, Product Defect/Quality Issue | Categorical |
-| 10 | `serious_ae` | `str/bool` | `serious_ae` | Sự cố nghiêm trọng? (true/false) | **Target variable cho Q6 (ML)**; có giá trị khuyết |
-| 11 | `treated_for_ae` | `str/bool` | `treated_for_ae` | Có điều trị cho phản ứng bất lợi? (true/false) | **Leakage risk** nếu dùng cho ML |
-| 12 | `number_of_animals_affected` | `int/str` | `number_of_animals_affected` | Số cá thể bị ảnh hưởng trong báo cáo | Thường = 1 |
-| 13 | `number_of_animals_treated` | `int/str` | `number_of_animals_treated` | Số cá thể được điều trị | |
-| 14 | `animal_species` | `str` | `animal.species` | Loài vật nuôi (Dog, Cat, Horse, ...) | Categorical; nhiều loài |
-| 15 | `animal_gender` | `str` | `animal.gender` | Giới tính (Male, Female, Neutered Male, Spayed Female, Unknown) | Categorical |
-| 16 | `animal_reproductive_status` | `str` | `animal.reproductive_status` | Tình trạng sinh sản (Intact, Neutered, Spayed, Unknown) | |
-| 17 | `animal_female_animal_physiological_status` | `str` | `animal.female_animal_physiological_status` | Trạng thái sinh lý con cái (Not Pregnant, Pregnant, Lactating, ...) | Thường NULL nếu Male |
-| 18 | `animal_breed_breed_component` | `str` | `animal.breed.breed_component` | Giống (breed) — có thể là chuỗi hoặc list nếu mixed breed | Cần flatten nếu là list |
-| 19 | `animal_breed_is_crossbred` | `str/bool` | `animal.breed.is_crossbred` | Có phải giống lai? | |
-| 20 | `animal_age_min` | `float` | `animal.age.min` | Tuổi tối thiểu (đơn vị gốc) | Cần quy đổi → `age_years` |
-| 21 | `animal_age_max` | `float` | `animal.age.max` | Tuổi tối đa (đơn vị gốc) | |
-| 22 | `animal_age_unit` | `str` | `animal.age.unit` | Đơn vị tuổi gốc: Year, Month, Week, Day | Dùng để quy đổi |
-| 23 | `animal_age_qualifier` | `str` | `animal.age.qualifier` | Dạng qualifier: Measured, Estimated, Unknown | |
-| 24 | `animal_weight_min` | `float` | `animal.weight.min` | Cân nặng tối thiểu (đơn vị gốc) | Cần quy đổi → `weight_kg` |
-| 25 | `animal_weight_max` | `float` | `animal.weight.max` | Cân nặng tối đa (đơn vị gốc) | |
-| 26 | `animal_weight_unit` | `str` | `animal.weight.unit` | Đơn vị cân nặng gốc: Kilogram, Pound, Gram, Ounce | Dùng để quy đổi |
-| 27 | `animal_weight_qualifier` | `str` | `animal.weight.qualifier` | Dạng qualifier: Measured, Estimated, Unknown | |
+| 5 | `primary_reporter` | `str` | `primary_reporter` | Đối tượng báo cáo chính (`Veterinarian`, `Animal Owner`, `Other Health Care Professional`, ...) | Categorical |
+| 6 | `secondary_reporter` | `str` | `secondary_reporter` | Đối tượng báo cáo phụ | Thường NULL |
+| 7 | `type_of_information` | `str` | `type_of_information` | Loại thông tin báo cáo: `Safety Issue`, `Lack Of Expected Effectiveness`, cả hai, `Product Defect` | Categorical |
+| 8 | `serious_ae` | `str/bool` | `serious_ae` | Sự cố nghiêm trọng? (`true`/`false`) | **Target variable cho Q6 (ML)**; có giá trị khuyết |
+| 9 | `treated_for_ae` | `str/bool` | `treated_for_ae` | Có điều trị cho phản ứng bất lợi? (`true`/`false`) | **Leakage risk** — loại bỏ khi huấn luyện ML |
+| 10 | `number_of_animals_affected` | `int/str` | `number_of_animals_affected` | Số cá thể bị ảnh hưởng trong báo cáo | Thường = 1 (thú cưng) hoặc > 1 (gia súc/đàn) |
+| 11 | `number_of_animals_treated` | `int/str` | `number_of_animals_treated` | Số cá thể được điều trị | |
+| 12 | `species` | `str` | `animal.species` | Loài vật nuôi (`Dog`, `Cat`, `Horse`, `Cattle`, ...) | Categorical |
+| 13 | `gender` | `str` | `animal.gender` | Giới tính (`Male`, `Female`, `Unknown`, ...) | Categorical |
+| 14 | `reproductive_status` | `str` | `animal.reproductive_status` | Tình trạng sinh sản (`Intact`, `Neutered`, `Unknown`, ...) | Categorical |
+| 15 | `female_physio_status` | `str` | `animal.female_animal_physiological_status` | Trạng thái sinh lý con cái (`Not Pregnant`, `Pregnant`, `Lactating`, ...) | Thường NULL nếu Male |
+| 16 | `breed_component` | `str` | `animal.breed.breed_component` | Giống vật nuôi (nếu là list nhiều giống sẽ được nối bằng `';'`) | Làm phẳng trong `data_loader.py` |
+| 17 | `is_crossbred` | `str/bool` | `animal.breed.is_crossbred` | Có phải giống lai? (`true`/`false`) | |
+| 18 | `age_min` | `float/str` | `animal.age.min` | Tuổi tối thiểu (ở đơn vị gốc `age_unit`) | Quy đổi → `age_years` ở bước tiền xử lý |
+| 19 | `age_max` | `float/str` | `animal.age.max` | Tuổi tối đa (ở đơn vị gốc `age_unit`) | |
+| 20 | `age_unit` | `str` | `animal.age.unit` | Đơn vị tuổi gốc (`Year`, `Month`, `Week`, `Day`, ...) | Dùng để quy đổi về năm |
+| 21 | `age_qualifier` | `str` | `animal.age.qualifier` | Dạng qualifier của tuổi (`Measured`, `Estimated`, `Unknown`) | |
+| 22 | `weight_min` | `float/str` | `animal.weight.min` | Cân nặng tối thiểu (ở đơn vị gốc `weight_unit`) | Quy đổi → `weight_kg` ở bước tiền xử lý |
+| 23 | `weight_max` | `float/str` | `animal.weight.max` | Cân nặng tối đa (ở đơn vị gốc `weight_unit`) | |
+| 24 | `weight_unit` | `str` | `animal.weight.unit` | Đơn vị cân nặng gốc (`Kilogram`, `Pound`, `Gram`, `Ounce`, ...) | Dùng để quy đổi về kg |
+| 25 | `weight_qualifier` | `str` | `animal.weight.qualifier` | Dạng qualifier của cân nặng (`Measured`, `Estimated`, `Unknown`) | |
+| 26 | `duration_value` | `float/str` | `duration.value` | Thời gian kéo dài của phản ứng (giá trị) | **Leakage risk** — loại bỏ khi huấn luyện ML |
+| 27 | `duration_unit` | `str` | `duration.unit` | Đơn vị thời gian kéo dài của phản ứng | **Leakage risk** — loại bỏ khi huấn luyện ML |
+| 28 | `health_prior_condition` | `str` | `health_assessment_prior_to_exposure.condition` | Tình trạng sức khỏe trước khi dùng thuốc (`Good`, `Fair`, `Poor`, `Unknown`) | |
+| 29 | `health_prior_assessed_by` | `str` | `health_assessment_prior_to_exposure.assessed_by` | Người đánh giá sức khỏe trước phơi nhiễm (`Veterinarian`, `Animal Owner`, ...) | |
+| 30 | `quarter` | `str` | *(loader metadata)* | Phân vùng quý của file dữ liệu (`2025q1`–`2026q1`) | Gắn tự động bởi `src/data_loader.py` |
+| 31 | `source_file` | `str` | *(loader metadata)* | Tên file JSON gốc trong `data/raw/` | Dùng để truy vết nguồn & đồng bộ bảng con khi dedupe |
 
 ---
 
-## 2. Bảng `drugs` — Thông tin thuốc / hoạt chất (Drug-level)
+## 2. Bảng `drugs.csv` — Thông tin thuốc / hoạt chất (Drug-level)
 
-Mỗi dòng = 1 mục thuốc trong 1 báo cáo. Quan hệ 1:N với `reports`.
+Mỗi dòng = 1 mục thuốc trong 1 báo cáo. Quan hệ 1:N với `reports.csv`.
 
-| # | Tên cột | Kiểu dữ liệu | JSON path gốc | Mô tả | Ghi chú |
+| # | Tên cột (`drugs.csv`) | Kiểu dữ liệu | JSON path / Nguồn gốc | Mô tả | Ghi chú |
 |---|---------|---------------|----------------|-------|---------|
-| 28 | `unique_aer_id_number` | `str` | *(FK)* | Khóa ngoại liên kết về `reports` | **Foreign Key** |
-| 29 | `drug_idx` | `int` | *(derived)* | Thứ tự thuốc trong báo cáo (0, 1, 2, ...) | |
-| 30 | `active_ingredients_name` | `str` | `drug[].active_ingredients[].name` | Tên hoạt chất (ví dụ: Fluralaner, Ivermectin) | Có thể list → cần explode hoặc join |
-| 31 | `active_ingredients_dose` | `str/dict` | `drug[].active_ingredients[].dose` | Liều lượng hoạt chất | Nested; cần parse |
-| 32 | `brand_name` | `str` | `drug[].brand_name` | Tên thương hiệu thuốc | |
-| 33 | `dosage_form` | `str` | `drug[].dosage_form` | Dạng bào chế (Tablet, Solution, Topical, ...) | Categorical |
-| 34 | `administration_route` | `str` | `drug[].route` | Đường dùng (Oral, Topical, Subcutaneous, ...) | Categorical |
-| 35 | `manufacturer_name` | `str` | `drug[].manufacturer.name` | Tên nhà sản xuất | |
-| 36 | `manufacturer_registration_number` | `str` | `drug[].manufacturer.registration_number` | Mã đăng ký nhà sản xuất | |
-| 37 | `used_according_to_label` | `str/bool` | `drug[].used_according_to_label` | Thuốc được dùng đúng nhãn? | true/false |
-| 38 | `off_label_use` | `str` | `drug[].off_label_use` | Mô tả cách dùng sai nhãn (nếu có) | Thường NULL khi `used_according_to_label = true` |
-| 39 | `lot_number` | `str` | `drug[].lot_number` | Số lô sản phẩm | |
-| 40 | `lot_expiration` | `str` | `drug[].lot_expiration` | Ngày hết hạn lô | |
-| 41 | `atc_vet_code` | `str` | `drug[].atc_vet_code` | Mã phân loại ATC Vet (hệ thống WHO) | |
-| 42 | `previous_ae_to_drug` | `str/bool` | `drug[].previous_ae_to_drug` | Đã có AE trước đó với thuốc này? | |
+| 32 | `unique_aer_id_number` | `str` | *(FK)* | Khóa ngoại liên kết về `reports.csv` | **Foreign Key** |
+| 33 | `drug_idx` | `int/str` | *(loader index)* | Thứ tự thuốc trong mảng `drug[]` của báo cáo (`0, 1, 2, ...`) | |
+| 34 | `active_ingredients` | `str` | `drug[].active_ingredients[].name` | Tên các hoạt chất trong thuốc nối bằng dấu `';'` | Có thể tách (`str.split(';')`) khi phân tích hoạt chất đơn |
+| 35 | `brand_name` | `str` | `drug[].brand_name` | Tên thương hiệu thuốc (nếu được công bố) | Thường bị che (`MSK`) hoặc NULL |
+| 36 | `dosage_form` | `str` | `drug[].dosage_form` | Dạng bào chế (`Tablet`, `Solution`, `Chewable`, `Topical`, ...) | Categorical |
+| 37 | `route` | `str` | `drug[].route` | Đường dùng thuốc (`Oral`, `Topical`, `Subcutaneous`, ...) | Categorical |
+| 38 | `manufacturer_name` | `str` | `drug[].manufacturer.name` | Tên nhà sản xuất thuốc | Làm phẳng từ `manufacturer.name` |
+| 39 | `atc_vet_code` | `str` | `drug[].atc_vet_code` | Mã phân loại dược lý thú y ATCvet (WHO) | |
+| 40 | `used_according_to_label` | `str/bool` | `drug[].used_according_to_label` | Thuốc có được dùng đúng nhãn hướng dẫn không? (`true`/`false`) | Biến cốt lõi cho Q4 |
+| 41 | `off_label_use` | `str` | `drug[].off_label_use` | Chi tiết hành vi dùng sai nhãn (`Overdose`, `Underdose`, `Unapproved species`, ...) | Thường NULL khi `used_according_to_label = true` |
+| 42 | `dose_numerator` | `float/str` | `drug[].dose.numerator` | Tử số liều dùng | Làm phẳng qua `_flat("dose", ...)` |
+| 43 | `dose_numerator_unit` | `str` | `drug[].dose.numerator_unit` | Đơn vị tử số liều dùng | |
+| 44 | `dose_denominator` | `float/str` | `drug[].dose.denominator` | Mẫu số liều dùng | |
+| 45 | `dose_denominator_unit` | `str` | `drug[].dose.denominator_unit` | Đơn vị mẫu số liều dùng | |
+| 46 | `frequency_value` | `float/str` | `drug[].frequency_of_administration.value` | Giá trị tần suất dùng thuốc | Làm phẳng qua `_flat("frequency", ...)` |
+| 47 | `frequency_unit` | `str` | `drug[].frequency_of_administration.unit` | Đơn vị tần suất dùng thuốc | |
+| 48 | `lot_number` | `str` | `drug[].lot_number` | Số lô sản phẩm | |
+| 49 | `lot_expiration` | `str` | `drug[].lot_expiration` | Ngày hết hạn lô | |
+| 50 | `previous_ae_to_drug` | `str/bool` | `drug[].previous_ae_to_drug` | Đã từng gặp AE trước đó với thuốc này? | *(Cùng các cờ phơi nhiễm tùy chọn khác trong `drug[]`)* |
+| 51 | `quarter` | `str` | *(loader metadata)* | Phân vùng quý (`2025q1`–`2026q1`) | |
+| 52 | `source_file` | `str` | *(loader metadata)* | Tên file JSON gốc | |
 
 ---
 
-## 3. Bảng `reactions` — Phản ứng bất lợi (Reaction-level)
+## 3. Bảng `reactions.csv` — Phản ứng bất lợi (Reaction-level)
 
-Mỗi dòng = 1 phản ứng VeDDRA trong 1 báo cáo. Quan hệ 1:N với `reports`.
+Mỗi dòng = 1 phản ứng VeDDRA trong 1 báo cáo. Quan hệ 1:N với `reports.csv`.
 
-| # | Tên cột | Kiểu dữ liệu | JSON path gốc | Mô tả | Ghi chú |
+| # | Tên cột (`reactions.csv`) | Kiểu dữ liệu | JSON path / Nguồn gốc | Mô tả | Ghi chú |
 |---|---------|---------------|----------------|-------|---------|
-| 43 | `unique_aer_id_number` | `str` | *(FK)* | Khóa ngoại liên kết về `reports` | **Foreign Key** |
-| 44 | `veddra_term_code` | `str` | `reaction[].veddra_term_code` | Mã thuật ngữ VeDDRA (hệ thống phân loại phản ứng thú y) | |
-| 45 | `veddra_term_name` | `str` | `reaction[].veddra_term_name` | Tên phản ứng (Vomiting, Lethargy, Diarrhoea, Death, ...) | **Core analysis variable** |
-| 46 | `veddra_version` | `str/int` | `reaction[].veddra_version` | Phiên bản bảng thuật ngữ VeDDRA | |
-| 47 | `reaction_number_of_animals_affected` | `int/str` | `reaction[].number_of_animals_affected` | Số cá thể có phản ứng này | |
-| 48 | `reaction_accuracy` | `str` | `reaction[].accuracy` | Độ chính xác của phản ứng (Exact, Possible, ...) | |
+| 53 | `unique_aer_id_number` | `str` | *(FK)* | Khóa ngoại liên kết về `reports.csv` | **Foreign Key** |
+| 54 | `veddra_term_code` | `str` | `reaction[].veddra_term_code` | Mã thuật ngữ VeDDRA | |
+| 55 | `veddra_term_name` | `str` | `reaction[].veddra_term_name` | Tên phản ứng lâm sàng (`Vomiting`, `Lethargy`, `Diarrhoea`, ...) | **Core analysis variable** (Q1, Q3) |
+| 56 | `veddra_version` | `str/int` | `reaction[].veddra_version` | Phiên bản bộ từ điển VeDDRA | |
+| 57 | `number_of_animals_affected` | `int/str` | `reaction[].number_of_animals_affected` | Số cá thể biểu hiện phản ứng này | |
+| 58 | `accuracy` | `str` | `reaction[].accuracy` | Độ chính xác của ghi nhận phản ứng (`Actual`, `Suspected`, ...) | |
+| 59 | `quarter` | `str` | *(loader metadata)* | Phân vùng quý (`2025q1`–`2026q1`) | |
+| 60 | `source_file` | `str` | *(loader metadata)* | Tên file JSON gốc | |
 
 ---
 
-## 4. Bảng `outcomes` — Kết cục y khoa (Outcome-level)
+## 4. Bảng `outcomes.csv` — Kết cục y khoa (Outcome-level)
 
-Mỗi dòng = 1 kết cục trong 1 báo cáo. Quan hệ 1:N với `reports`.
+Mỗi dòng = 1 kết cục trong 1 báo cáo. Quan hệ 1:N với `reports.csv`.
 
-| # | Tên cột | Kiểu dữ liệu | JSON path gốc | Mô tả | Ghi chú |
+| # | Tên cột (`outcomes.csv`) | Kiểu dữ liệu | JSON path / Nguồn gốc | Mô tả | Ghi chú |
 |---|---------|---------------|----------------|-------|---------|
-| — | `unique_aer_id_number` | `str` | *(FK)* | Khóa ngoại liên kết về `reports` | **Foreign Key** |
-| — | `medical_status` | `str` | `outcome[].medical_status` | Kết cục y khoa: Recovered/Normal, Died, Euthanized, Ongoing, Unknown | Categorical |
-| — | `outcome_number_of_animals_affected` | `int/str` | `outcome[].number_of_animals_affected` | Số cá thể có kết cục này | |
+| 61 | `unique_aer_id_number` | `str` | *(FK)* | Khóa ngoại liên kết về `reports.csv` | **Foreign Key** |
+| 62 | `medical_status` | `str` | `outcome[].medical_status` | Kết cục y khoa: `Recovered/Normal`, `Died`, `Euthanized`, `Ongoing`, `Unknown` | **Leakage risk** cho Q6 (ML) |
+| 63 | `number_of_animals_affected` | `int/str` | `outcome[].number_of_animals_affected` | Số cá thể có kết cục này | |
+| 64 | `quarter` | `str` | *(loader metadata)* | Phân vùng quý (`2025q1`–`2026q1`) | |
+| 65 | `source_file` | `str` | *(loader metadata)* | Tên file JSON gốc | |
 
 ---
 
-## 5. Biến dẫn xuất (Derived Variables) — sẽ tạo ở giai đoạn tiền xử lý
+## 5. Biến dẫn xuất (Derived Variables) — Tạo ở giai đoạn Tiền xử lý & Feature Engineering
 
-| Biến | Công thức / Logic | Mục đích |
-|------|-------------------|----------|
-| `age_years` | Quy đổi `animal_age_min` theo `animal_age_unit` (Day→/365.25, Week→/52.18, Month→/12) | Chuẩn hóa so sánh tuổi |
-| `weight_kg` | Quy đổi `animal_weight_min` theo `animal_weight_unit` (lb→×0.4536, oz→×0.02835, g→/1000) | Chuẩn hóa so sánh cân nặng |
-| `life_stage` | Phân nhóm từ `age_years` + `animal_species` (Neonatal, Young, Adult, Senior) | Phân tầng phân tích |
-| `reporting_delay_days` | `original_receive_date − onset_date` (ngày) | Phân tích hành vi báo cáo (Q5) |
-| `num_drugs` | Đếm số drug[] trong mỗi report | Xác định đa trị liệu (polypharmacy) |
-| `has_off_label_use` | `any(drug.used_according_to_label == false)` | Phân tích dùng thuốc sai nhãn (Q4) |
-
----
-
-## Ghi chú chung
-
-1. **Schema JSON lồng nhau**: Mỗi record gốc trong `results[]` chứa các object/array con (`animal`, `drug[]`, `reaction[]`, `outcome[]`). Bảng `reports` được flatten từ cấp root + `animal.*`. Các bảng `drugs`, `reactions`, `outcomes` được explode từ array tương ứng.
-2. **Giá trị khuyết**: Nhiều trường tùy chọn (onset_date, weight, age, secondary_reporter, off_label_use) có tỷ lệ NULL cao — cần phân tích cơ chế khuyết (MCAR/MAR/MNAR) ở giai đoạn EDA.
-3. **Đơn vị không đồng nhất**: Tuổi (Day/Week/Month/Year) và cân nặng (Kilogram/Pound/Gram/Ounce) cần quy đổi trước khi phân tích.
-4. **Ngưỡng 48 cột**: Data dictionary này liệt kê 48 trường chính (27 cột reports + 15 cột drugs + 6 cột reactions) dùng cho phân tích. Bảng `outcomes` và biến dẫn xuất bổ sung thêm.
-
+| Biến dẫn xuất | Nguồn & Công thức quy đổi | Mục đích sử dụng |
+|---|---|---|
+| `year` | Trích xuất từ `original_receive_date` (hoặc 4 ký tự đầu của `quarter`) | Phân tách giai đoạn 2025 vs. 2026 |
+| `age_years` | Quy đổi `age_min` theo `age_unit` (`Day` $\rightarrow /365.25$, `Week` $\rightarrow /52.18$, `Month` $\rightarrow /12$) | Chuẩn hóa so sánh tuổi vật nuôi (Q2, Q6) |
+| `weight_kg` | Quy đổi `weight_min` theo `weight_unit` (`Pound` $\rightarrow \times 0.453592$, `Ounce` $\rightarrow \times 0.02835$, `Gram` $\rightarrow /1000$) | Chuẩn hóa so sánh cân nặng (Q2, Q6) |
+| `life_stage` | Phân nhóm từ `age_years` theo `species` (`Junior/Young`, `Adult`, `Senior`, `Unknown`) | Phân tầng rủi ro lâm sàng (Q2) |
+| `reporting_delay_days` | `original_receive_date - onset_date` (tính theo ngày) | Phân tích độ trễ báo cáo theo đối tượng gửi (Q5) |
+| `num_drugs` | Đếm số dòng thuốc (`drug_idx`) trên mỗi `unique_aer_id_number` | Xác định đa trị liệu (`polypharmacy` khi `num_drugs >= 2`) (Q2, Q4, Q6) |
+| `has_off_label_use` | `any(used_according_to_label == 'false')` hoặc có `off_label_use` trên báo cáo | Phân tích tác động dùng thuốc sai nhãn (Q4, Q6) |

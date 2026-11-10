@@ -3,7 +3,7 @@
 
 > **Đồ án cuối kỳ môn học:** CSC17104 – Lập trình cho Khoa học Dữ liệu (Programming for Data Science)  
 > **Trường:** Đại học Khoa học Tự nhiên, ĐHQG-HCM (FIT@HCMUS)  
-> **Nhóm thực hiện:** Prg4DS-G3
+> **Nhóm thực hiện:** Global Ban (`Prg4DS-G3`)
 
 ---
 
@@ -47,8 +47,8 @@
 ### 2.2. Phương pháp thu thập, Quần thể & Phạm vi thời gian (Collection Method, Population & Period)
 - **Phương pháp thu thập dữ liệu (Collection Method — Giám sát Cảnh giác dược Thú y):**
   *(Lưu ý: Khác với đề xuất ban đầu ở giai đoạn tiền khả thi dùng dữ liệu viễn thám/khảo sát thực địa, bộ dữ liệu chính thức của nhóm được thu thập qua hệ thống **Giám sát Cảnh giác dược Thú y — Veterinary Pharmacovigilance** của FDA CVM từ hai kênh chính)*:
-  1. **Báo cáo bắt buộc từ nhà sản xuất (Mandatory Reporting — 21 CFR 514.80):** Các hãng dược và nhà tài trợ thuốc thú y được FDA cấp phép (NADA/ANADA) có nghĩa vụ pháp lý phải thu thập và gửi báo cáo sự cố bất lợi về FDA CVM thông qua cổng điện tử **FDA eSubmitter** / chuẩn bản tin **HL7 ICSR** (theo hướng dẫn quốc tế VICH GL24 & GL42), bao gồm báo cáo khẩn 15 ngày (*15-day Alert Reports* cho biến cố nghiêm trọng/ngoài nhãn) và báo cáo định kỳ.
-  2. **Báo cáo tự nguyện từ thực tế lâm sàng (Voluntary / Spontaneous Reporting):** Bác sĩ thú y (`Veterinarian`), chủ vật nuôi (`Animal Owner`), người chăn nuôi và nhân viên y tế khác gửi báo cáo trực tiếp cho FDA qua biểu mẫu **Form FDA 1932a** (*"Veterinary Adverse Drug Reaction, Lack of Effectiveness, or Product Defect Report"*) trên **Safety Reporting Portal (SRP)**, hoặc thông báo cho hãng thuốc để hãng chuyển tiếp về FDA.
+  1. **Báo cáo bắt buộc từ nhà sản xuất (Mandatory Reporting — 21 CFR 514.80):** Các hãng dược và nhà tài trợ thuốc thú y được FDA cấp phép (NADA/ANADA) có nghĩa vụ pháp lý phải thu thập và gửi báo cáo sự cố bất lợi về FDA CVM (bao gồm báo cáo khẩn 15 ngày — *15-day Alert Reports* trên biểu mẫu **Form FDA 1932** và báo cáo định kỳ) qua cổng điện tử **FDA Electronic Submissions Gateway (ESG / ESG NextGen — Electronic Submission System)** với chuẩn bản tin điện tử **HL7 ICSR** theo hướng dẫn quốc tế **VICH GL35** (*CVM GFI #214*).
+  2. **Báo cáo tự nguyện từ thực tế lâm sàng (Voluntary / Spontaneous Reporting):** Bác sĩ thú y (`Veterinarian`), chủ vật nuôi (`Animal Owner`), người chăn nuôi và nhân viên y tế khác gửi báo cáo tự nguyện bằng cách thông báo cho hãng sản xuất (để hãng chuyển tiếp về FDA), hoặc gửi trực tiếp cho FDA CVM qua biểu mẫu PDF **Form FDA 1932a** (*"Veterinary Adverse Drug Reaction, Lack of Effectiveness, or Product Defect Report"*) hay bảng câu hỏi trực tuyến **Rational Questionnaire** trên cổng **Safety Reporting Portal (SRP)**.
   3. **Chuẩn hóa thuật ngữ chuyên ngành:** Trước khi phát hành lên openFDA, các triệu chứng và phản ứng lâm sàng được mã hóa theo từ điển chuẩn quốc tế **VeDDRA** (*Veterinary Dictionary for Drug Regulatory Activities*), và thuốc được ánh xạ theo hệ thống phân loại **ATCvet** của Tổ chức Y tế Thế giới (WHO).
 - **Quần thể nghiên cứu & Đơn vị quan sát (Population & Unit of Observation):**
   - **Quần thể mục tiêu (Target Population):** Các trường hợp động vật (thú cưng như Chó, Mèo; ngựa; gia súc, gia cầm và các loài vật nuôi khác) sử dụng thuốc thú y, chế phẩm sinh học hoặc thiết bị thú y (chủ yếu tại Hoa Kỳ hoặc do nhà sản xuất đăng ký với FDA báo cáo) gặp biến cố bất lợi (`Safety Issue`), thiếu hụt hiệu quả mong đợi (`Lack Of Expected Effectiveness`) hoặc lỗi chất lượng sản phẩm (`Product Defect`).
@@ -70,29 +70,29 @@ Do đặc thù của hệ thống báo cáo cảnh giác dược hậu mại, b�
 2. **Không thiết lập quan hệ nhân quả trực tiếp (No Proof of Causality):** Một báo cáo ghi nhận thuốc $A$ và phản ứng $B$ chỉ phản ánh sự kết hợp về mặt thời gian (*temporal association*), không chứng minh thuốc $A$ gây ra phản ứng $B$. Phản ứng có thể bắt nguồn từ bệnh lý nền, tuổi già, tương tác đa thuốc (*polypharmacy*) hoặc sai sót khi dùng thuốc (*off-label*).
 3. **Báo cáo thiếu & Thiên lệch mức độ nghiêm trọng (Under-reporting & Severity/Stimulated Reporting Bias):** Chỉ một phần nhỏ các phản ứng phụ ngoài thực tế được gửi về FDA. Các biến cố nặng (`serious_ae = true`, tử vong), thuốc vừa mới cấp phép (*Weber effect*), hoặc thuốc đang có cảnh báo an toàn từ truyền thông/FDA có xác suất được báo cáo cao hơn hẳn các phản ứng nhẹ thoáng qua.
 4. **Thiên lệch theo loài và hành vi người báo cáo (Species & Reporter Bias):** Thú cưng trong gia đình (đặc biệt là Chó và Mèo) được chăm sóc cá thể hóa nên chiếm tỷ trọng áp đảo trong cơ sở dữ liệu so với vật nuôi trang trại. Bên cạnh đó, báo cáo từ Bác sĩ thú y (`Veterinarian`), Chủ vật nuôi (`Animal Owner`) và Hãng dược khác biệt rõ rệt về độ đầy đủ lâm sàng, thuật ngữ mô tả và độ trễ gửi báo cáo (`reporting_delay_days`).
-5. **Bản ghi cập nhật trùng lặp xuyên quý (Follow-up Duplicates across Quarters):** Khi một ca bệnh có thêm thông tin bổ sung (follow-up), FDA có thể cập nhật lại hồ sơ đó trong các quý tiếp theo với cùng mã `unique_aer_id_number` (hoặc `report_id`). Do đó, `src/data_loader.py` của nhóm phải thực hiện khử trùng lặp và chỉ giữ lại phiên bản cập nhật ở quý muộn nhất.
+5. **Khử trùng lặp phòng ngừa theo `unique_aer_id_number` & Phân biệt với `report_id` (Precautionary Deduplication & Identifier Distinction):** Về mặt lý thuyết, khi một ca bệnh có thêm thông tin bổ sung (follow-up), hồ sơ có thể được cập nhật lại với cùng mã báo cáo `unique_aer_id_number`. Dù kiểm tra thực tế trên các cặp phân vùng quý liền kề (`2025q1` $\leftrightarrow$ `2025q2`, `2025q4` $\leftrightarrow$ `2026q1`) ghi nhận `0` bản ghi trùng `unique_aer_id_number`, `src/data_loader.py` vẫn thực hiện bước **khử trùng lặp phòng ngừa** theo khóa `unique_aer_id_number` (giữ bản ở quý/file muộn nhất). **Lưu ý quan trọng:** Chỉ khử trùng lặp theo `unique_aer_id_number`, tuyệt đối **không** dedupe theo `report_id`, vì `report_id` là mã số hồ sơ đăng ký thuốc NADA/ANADA (ví dụ: `N141302`, `N141272`) — nhiều ca bệnh độc lập của cùng một thuốc sẽ có chung `report_id` (ví dụ `2025q4` $\leftrightarrow$ `2026q1` có 311 mã `report_id` trùng nhau).
 6. **Dữ liệu khuyết không ngẫu nhiên & Đơn vị đo lường hỗn hợp (Missingness & Heterogeneous Units):** Nhiều trường thông tin (`onset_date`, `age`, `weight`, `serious_ae`, `off_label_use`) bị khuyết theo cơ chế phụ thuộc vào người báo cáo hoặc loại thông tin (MAR/MNAR). Ngoài ra, tuổi (`Day`, `Week`, `Month`, `Year`) và cân nặng (`Kilogram`, `Pound`, `Gram`, `Ounce`) được lưu ở nhiều đơn vị khác nhau, bắt buộc phải chuẩn hóa trước khi phân tích.
 
 ### 2.4. Cấu trúc Schema JSON lồng nhau & Thiết kế 4 Bảng Quan hệ Phẳng
-Mỗi phần tử trong `results[]` đại diện cho một báo cáo sự kiện (`unique_aer_id_number` / `report_id`). Để tránh bùng nổ tổ hợp (Cartesian explosion) khi một báo cáo chứa nhiều thuốc (`drug[]`), nhiều triệu chứng (`reaction[]`) và nhiều kết cục (`outcome[]`), nhóm thiết kế quy trình **flatten/normalize** (trong `src/data_loader.py`) thành 4 bảng chuẩn hóa định dạng `.csv` lưu tại `data/processed/`:
+Mỗi phần tử trong `results[]` đại diện cho một báo cáo sự kiện (định danh duy nhất bởi `unique_aer_id_number`; không nhầm với `report_id` là mã đăng ký thuốc NADA/ANADA). Để tránh bùng nổ tổ hợp (Cartesian explosion) khi một báo cáo chứa nhiều thuốc (`drug[]`), nhiều triệu chứng (`reaction[]`) và nhiều kết cục (`outcome[]`), nhóm thiết kế quy trình **flatten/normalize** (trong `src/data_loader.py`) thành 4 bảng chuẩn hóa định dạng `.csv` lưu tại `data/processed/` (các biến dẫn xuất như `year`, `age_years`, `weight_kg`, `life_stage`, `reporting_delay_days` được tạo ở bước tiền xử lý):
 
-| Bảng chuẩn hóa | Khóa chính / Khóa ngoại | Các trường thông tin cốt lõi |
+| Bảng chuẩn hóa | Khóa chính / Khóa ngoại | Các trường thông tin cốt lõi (khớp output của `src/data_loader.py`) |
 |---|---|---|
-| **`reports.csv`** | `unique_aer_id_number` (PK) | `original_receive_date`, `onset_date`, `year`, `quarter`, `primary_reporter`, `secondary_reporter`, `type_of_information`, `serious_ae`, `treated_for_ae`, `number_of_animals_affected`, cùng thông tin phẳng hóa từ đối tượng `animal` (`species`, `gender`, `reproductive_status`, `age_years`, `weight_kg`, `breed`) |
-| **`drugs.csv`** | `unique_aer_id_number` (FK) | `active_ingredients` (name, dose), `route`, `dosage_form`, `atc_vet_code`, `manufacturer_name`, `used_according_to_label`, `off_label_use`, `lot_number` |
-| **`reactions.csv`** | `unique_aer_id_number` (FK) | `veddra_term_code`, `veddra_term_name`, `veddra_version`, `number_of_animals_affected`, `accuracy` |
-| **`outcomes.csv`** | `unique_aer_id_number` (FK) | `medical_status` (`Recovered/Normal`, `Died`, `Euthanized`, `Ongoing`, `Unknown`), `number_of_animals_affected` |
+| **`reports.csv`** | `unique_aer_id_number` (PK) | `report_id` (mã NADA/ANADA), `original_receive_date`, `onset_date`, `primary_reporter`, `secondary_reporter`, `type_of_information`, `serious_ae`, `treated_for_ae`, `number_of_animals_affected`, `number_of_animals_treated`, thông tin phẳng hóa từ `animal` (`species`, `gender`, `reproductive_status`, `female_physio_status`, `age_min`, `age_max`, `age_unit`, `age_qualifier`, `weight_min`, `weight_max`, `weight_unit`, `weight_qualifier`, `is_crossbred`, `breed_component`), `duration_value`, `duration_unit`, `health_prior_condition`, `health_prior_assessed_by`, `quarter`, `source_file` |
+| **`drugs.csv`** | `unique_aer_id_number` (FK) | `drug_idx`, `active_ingredients` (tên hoạt chất nối bằng `';'`), `brand_name`, `dosage_form`, `route`, `atc_vet_code`, `manufacturer_name`, `used_according_to_label`, `off_label_use`, `lot_number`, `lot_expiration`, `dose_numerator`, `dose_numerator_unit`, `dose_denominator`, `dose_denominator_unit`, `frequency_value`, `frequency_unit`, `quarter`, `source_file` |
+| **`reactions.csv`** | `unique_aer_id_number` (FK) | `veddra_term_code`, `veddra_term_name`, `veddra_version`, `number_of_animals_affected`, `accuracy`, `quarter`, `source_file` |
+| **`outcomes.csv`** | `unique_aer_id_number` (FK) | `medical_status` (`Recovered/Normal`, `Died`, `Euthanized`, `Ongoing`, `Unknown`), `number_of_animals_affected`, `quarter`, `source_file` |
 
 ### 2.5. Khai báo các công trình/notebook công khai liên quan & Điểm khác biệt (Declare Existing Work)
 
 Nhóm đã khảo sát các công trình nghiên cứu, kho mã nguồn và công cụ phân tích công khai liên quan đến bộ dữ liệu **openFDA Animal & Veterinary Adverse Events**:
 
-| STT | Công trình / Kho mã nguồn / Tài liệu công khai | Nội dung & Cách tiếp cận chính | Điểm khác biệt cốt lõi trong đồ án của nhóm **Prg4DS-G3** |
+| STT | Công trình / Kho mã nguồn / Tài liệu công khai | Nội dung & Cách tiếp cận chính | Điểm khác biệt cốt lõi trong đồ án của nhóm **Global Ban** |
 |:---:|---|---|---|
-| 1 | **Cổng khám phá tương tác chính thức của openFDA**<br>([openFDA Animal & Veterinary Explorer](https://open.fda.gov/apis/animalandveterinary/event/explore/)) | Cung cấp giao diện truy vấn API trực tuyến và biểu đồ cột đếm tần suất đơn biến (Top `animal.species`, Top `primary_reporter`, Top `reaction.veddra_term_name` trên toàn bộ lịch sử). | Đi xa hơn thống kê đếm đơn biến: nhóm thực hiện **chuẩn hóa đa bảng**, quy đổi đơn vị sinh trắc học (`age_years`, `weight_kg`), **kiểm soát biến nhiễu (D4)** và **ước lượng khoảng tin cậy / kiểm định giả thuyết (D5)** thay vì chỉ nhìn tần suất thô. |
-| 2 | **Kho mã nguồn hạ tầng & Công cụ truy vấn trên GitHub**<br>([`FDA/openfda`](https://github.com/FDA/openfda), [`OpenVet-Projects/VetClaw`](https://github.com/OpenVet-Projects/VetClaw), [`api-evangelist/openfda`](https://github.com/api-evangelist/openfda)) | Tập trung vào pipeline nạp dữ liệu backend (`animalandveterinarydrugevent`) hoặc viết các hàm wrapper/CLI tra cứu nhanh báo cáo theo tên thuốc và loài qua REST API. | Xây dựng **pipeline dữ liệu tái lập hoàn chỉnh** (`src/download_data.py`, `src/data_loader.py`) tải trực tiếp các phân vùng quý từ manifest, kiểm tra toàn vẹn SHA-256, khử trùng lặp `unique_aer_id_number` xuyên quý và chống bùng nổ tổ hợp khi kết nối 4 bảng. |
-| 3 | **Nghiên cứu Học máy & XAI trên dữ liệu openFDA CVM**<br>*(Sholehrasa et al., 2025 — [`arXiv:2510.01520`](https://arxiv.org/abs/2510.01520): "Predictive Modeling and Explainable AI for Veterinary Safety Profiles, Residue Assessment, and Health Outcomes")* | Khai thác dữ liệu lịch sử 1987–2025Q1 kết hợp đặc trưng hóa lý phân tử thuốc (SMILES) và kỹ thuật lấy mẫu SMOTE-ENN để phân loại kết cục hậu nghiệm (*Death vs. Recovery*). | (1) Tập trung vào **giai đoạn đương đại 2025 Q1–Q4 & kiểm thử vượt thời gian sang 2026 Q1** (*Out-of-Time Validation*) thay vì gộp chung dữ liệu từ 1987 vốn có độ lệch thời đại lớn; (2) Giải bài toán **Triage tại thời điểm tiếp nhận hồ sơ** (dự đoán `serious_ae`), **loại bỏ triệt để rò rỉ dữ liệu hậu nghiệm** (`outcome`, `treated_for_ae`, `duration`). |
-| 4 | **Các phân tích Cảnh giác dược thú y chuyên biệt**<br>*(Các bài báo trên Frontiers in Veterinary Science, 2024–2025, vd: phân tích tín hiệu an toàn cho kháng thể đơn dòng bedinvetmab hoặc thuốc trị ký sinh trùng)* | Chỉ phân tích cục bộ trên **1 hoạt chất hoặc 1 bệnh lý đơn lẻ** (như viêm xương khớp ở chó) và so sánh tỷ lệ báo cáo thô giữa openFDA với cơ sở dữ liệu châu Âu (EVVet). | Phân tích **toàn cảnh và đối sánh đa chiều** trên toàn bộ báo cáo: đối chiếu cấu trúc đồng xuất hiện hoạt chất – phản ứng (ROR) giữa *Safety Issue* và *Lack Of Expected Effectiveness* (Q3), đánh giá tác động tương tác *Off-label $\times$ Polypharmacy* (Q4), và phân tích độ trễ báo cáo theo đối tượng gửi (Q5). |
+| 1 | **Cổng khám phá tương tác chính thức của openFDA**<br>([openFDA Animal & Veterinary Interactive Chart](https://open.fda.gov/apis/animalandveterinary/event/explore-the-api-with-an-interactive-chart/)) | Cung cấp giao diện truy vấn API trực tuyến và biểu đồ cột đếm tần suất đơn biến (Top `animal.species`, Top `primary_reporter`, Top `reaction.veddra_term_name` trên toàn bộ lịch sử). | Đi xa hơn thống kê đếm đơn biến: nhóm thực hiện **chuẩn hóa đa bảng**, quy đổi đơn vị sinh trắc học (`age_years`, `weight_kg`), **kiểm soát biến nhiễu (D4)** và **ước lượng khoảng tin cậy / kiểm định giả thuyết (D5)** thay vì chỉ nhìn tần suất thô. |
+| 2 | **Kho mã nguồn hạ tầng, Thư viện AI Skills & Công cụ truy vấn trên GitHub**<br>([`FDA/openfda`](https://github.com/FDA/openfda), [`OpenVet-Projects/VetClaw`](https://github.com/OpenVet-Projects/VetClaw), [`api-evangelist/openfda`](https://github.com/api-evangelist/openfda)) | Tập trung vào pipeline nạp dữ liệu backend (`FDA/openfda` — `animalandveterinarydrugevent`), thư viện kỹ năng (skills) AI thú y có tích hợp SDK client cho openFDA (`OpenVet-Projects/VetClaw`), hoặc đặc tả API/wrapper tra cứu qua REST API (`api-evangelist/openfda`). | Xây dựng **pipeline dữ liệu tái lập hoàn chỉnh** (`src/download_data.py`, `src/data_loader.py`) tải trực tiếp các phân vùng quý từ manifest, kiểm tra toàn vẹn SHA-256, khử trùng lặp phòng ngừa theo `unique_aer_id_number` và chống bùng nổ tổ hợp khi kết nối 4 bảng. |
+| 3 | **Nghiên cứu Học máy & XAI trên dữ liệu openFDA CVM**<br>*(Sholehrasa et al., 2025 — [`arXiv:2510.01520`](https://arxiv.org/abs/2510.01520): "Predictive Modeling and Explainable AI for Veterinary Safety Profiles, Residue Assessment, and Health Outcomes Using Real-World Data and Physicochemical Properties")* | Khai thác dữ liệu lịch sử 1987–2025Q1 kết hợp các đặc trưng hóa lý của thuốc trích xuất từ PubChem (khối lượng phân tử, XLogP3, số chất nhận liên kết hydro...) và kỹ thuật lấy mẫu SMOTE-ENN để phân loại kết cục hậu nghiệm (*Death vs. Recovery*). | (1) Tập trung vào **giai đoạn đương đại 2025 Q1–Q4 & kiểm thử vượt thời gian sang 2026 Q1** (*Out-of-Time Validation*) thay vì gộp chung dữ liệu từ 1987 vốn có độ lệch thời đại lớn; (2) Giải bài toán **Triage tại thời điểm tiếp nhận hồ sơ** (dự đoán `serious_ae`), **loại bỏ triệt để rò rỉ dữ liệu hậu nghiệm** (`outcome`, `treated_for_ae`, `duration`). |
+| 4 | **Các nghiên cứu Cảnh giác dược thú y chuyên biệt**<br>*(Xu et al., 2019 — Topics in Companion Animal Medicine, 37:100366, [`doi:10.1016/j.tcam.2019.100366`](https://doi.org/10.1016/j.tcam.2019.100366); Farrell et al., 2025 — Frontiers in Veterinary Science, 12:1581490, [`doi:10.3389/fvets.2025.1581490`](https://doi.org/10.3389/fvets.2025.1581490))* | Xu et al. (2019) phân tích dữ liệu openFDA CVM trên Chó và Mèo nhưng tập trung vào 2 hoạt chất trị ký sinh trùng đơn lẻ (*selamectin* và *spinosad*); Farrell et al. (2025) phân tích bất cân xứng các biến cố cơ xương khớp của kháng thể đơn dòng *bedinvetmab* so với 6 thuốc đối chứng trị viêm xương khớp ở chó trên cơ sở dữ liệu **EudraVigilance Veterinary (EVV)** của EMA (2004–2024). | Phân tích **toàn cảnh và đối sánh đa chiều** trên toàn bộ báo cáo openFDA CVM (2025 Q1–2026 Q1): đối chiếu cấu trúc đồng xuất hiện hoạt chất – phản ứng (ROR) giữa *Safety Issue* và *Lack Of Expected Effectiveness* (Q3), đánh giá tác động tương tác *Off-label $\times$ Polypharmacy* (Q4), và phân tích độ trễ báo cáo theo đối tượng gửi (Q5). |
 
 ---
 
@@ -101,7 +101,7 @@ Nhóm đã khảo sát các công trình nghiên cứu, kho mã nguồn và côn
 | Viết tắt | Ý nghĩa |
 |---|---|
 | **AE** | Adverse Event (biến cố/phản ứng bất lợi) |
-| **VeDDRA** | Veterinary Dictionary for Drug Related Affairs |
+| **VeDDRA** | Veterinary Dictionary for Drug Regulatory Activities |
 | **CVM** | Center for Veterinary Medicine (thuộc FDA) |
 | **FDA** | U.S. Food and Drug Administration |
 | **OR** | Odds Ratio (tỷ số chênh) |
@@ -194,7 +194,7 @@ flowchart LR
 - **Mục tiêu:** Tải đầy đủ 5 tệp dữ liệu quý từ `2025q1` đến `2026q1` từ [openFDA Downloads](https://open.fda.gov/data/downloads/) vào `data/raw/` và viết hàm làm phẳng trong `src/data_loader.py`.
 - **Đầu việc cụ thể:**
   - **Kiệt (M3):** Kiểm tra cấu trúc `meta` và `results` của các file qua từng quý (2025 Q1–Q4 và 2026 Q1; xem schema giữa 2025 và 2026 có thay đổi trường nào không).
-  - **Khang (M1):** Viết hàm đọc hàng loạt file `.json` / `.json.zip`, tách thành 4 bảng `reports`, `drugs`, `reactions`, `outcomes` gắn nhãn `year`, `quarter` và kiểm tra trùng lặp `unique_aer_id_number`.
+  - **Khang (M1):** Viết hàm đọc hàng loạt file `.json` / `.json.zip`, tách thành 4 bảng `reports`, `drugs`, `reactions`, `outcomes` gắn nhãn `quarter`, `source_file` (cột `year` là biến dẫn xuất tạo ở bước tiền xử lý) và kiểm tra trùng lặp `unique_aer_id_number`.
   - **Nhi (M2):** Lập từ điển dữ liệu (Data Dictionary) và kiểm tra tính toàn vẹn của khóa ngoại giữa 4 bảng.
 
 ### Giai đoạn 2: Khám phá Dữ liệu (EDA) & Tiền xử lý Chuẩn hóa (`01_collection_exploration.ipynb`)
@@ -286,20 +286,35 @@ conda init powershell
 Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 ```
 
-### 7.3. Tải dữ liệu từ openFDA (2025 Q1 – 2026 Q1)
-**Cách 1 — Tự động qua script (Khuyến nghị):**
-Chạy script tải tự động 5 quý (`2025q1`–`2025q4` và `2026q1`) từ manifest chính thức của openFDA kèm kiểm tra SHA-256 checksum:
+### 7.3. Tải dữ liệu từ openFDA và tạo 4 bảng CSV (2025 Q1 – 2026 Q1)
+
+**Bước 1: Tải JSON thô** (chạy tại thư mục gốc, đã `conda activate ds-env`):
+
 ```powershell
 python src/download_data.py
 ```
 
-**Cách 2 — Tải thủ công:**
-1. Truy cập trang tải dữ liệu chính thức: **[https://open.fda.gov/data/downloads/](https://open.fda.gov/data/downloads/)**.
-2. Tìm đến mục **Animal and Veterinary $\rightarrow$ Animal and Veterinary Event**.
-3. Tải các tệp `.json.zip` (hoặc giải nén thành `.json`) của:
-   - Năm **2025** (đủ 4 quý **Q1–Q4**).
-   - Năm **2026** (quý đầu tiên **Q1**).
-4. Đặt toàn bộ các tệp đã tải vào thư mục `data/raw/`. *(Lưu ý: `.gitignore` đã được cấu hình để không đẩy các tệp dữ liệu dung lượng lớn này lên GitHub).*
+Script đọc danh sách file từ `https://api.fda.gov/download.json`, tải các tệp `.json.zip` của 5 quý `2025q1`–`2026q1`, giải nén vào `data/raw/` và ghi nhật ký `data/raw/MANIFEST.json` (ngày cập nhật, số bản ghi, SHA-256). Các tùy chọn:
+
+```powershell
+python src/download_data.py --force                       # tải lại dù file đã có
+python src/download_data.py --quarters 2025q1 2025q2      # chỉ tải một số quý
+```
+
+Nếu có file tải lỗi, script in danh sách file lỗi và thoát với mã 1; chạy lại lệnh để tải bù (file đã tải xong sẽ được bỏ qua).
+
+**Bước 2: Tạo 4 bảng CSV** (`reports.csv`, `drugs.csv`, `reactions.csv`, `outcomes.csv` trong `data/processed/`). Có hai cách, kết quả như nhau:
+
+- Chạy **Cell 2** của `notebooks/01_collection_exploration.ipynb` (đặt `REBUILD = True` nếu muốn tạo lại), hoặc
+- Chạy trực tiếp từ terminal:
+
+```powershell
+python -c "import logging; logging.basicConfig(level=logging.INFO); from src.data_loader import build_consolidated_tables; build_consolidated_tables()"
+```
+
+Hàm này làm phẳng JSON lồng nhau thành 4 bảng, loại `unique_aer_id_number` trùng giữa các file (giữ bản ở quý muộn nhất), và dừng với lỗi nếu thiếu file hoặc thiếu quý. Các cột ngày/số vẫn là chuỗi, việc ép kiểu làm ở bước tiền xử lý.
+
+> `data/raw/` và `data/processed/` không được commit (xem `.gitignore`), nên mỗi thành viên cần chạy 2 bước trên sau khi clone repo.
 
 ### 7.4. Chạy các Notebook theo đúng thứ tự
 Khởi động JupyterLab từ thư mục gốc của dự án:
