@@ -3,7 +3,7 @@
 
 > **Đồ án cuối kỳ môn học:** CSC17104 – Lập trình cho Khoa học Dữ liệu (Programming for Data Science)  
 > **Trường:** Đại học Khoa học Tự nhiên, ĐHQG-HCM (FIT@HCMUS)  
-> **Nhóm thực hiện:** Global Ban (`Prg4DS-G3`)
+> **Nhóm thực hiện:** Global Ban
 
 ---
 
