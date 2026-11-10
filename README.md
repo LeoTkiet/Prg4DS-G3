@@ -257,13 +257,35 @@ conda init powershell
 Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 ```
 
-### 7.3. Tải dữ liệu từ openFDA (2025 Q1 – 2026 Q1)
-1. Truy cập trang tải dữ liệu chính thức: **[https://open.fda.gov/data/downloads/](https://open.fda.gov/data/downloads/)**.
-2. Tìm đến mục **Animal and Veterinary $\rightarrow$ Animal and Veterinary Event**.
-3. Tải các tệp `.json.zip` (hoặc giải nén thành `.json`) của:
-   - Năm **2025** (đủ 4 quý **Q1–Q4**).
-   - Năm **2026** (quý đầu tiên **Q1**).
-4. Đặt toàn bộ các tệp đã tải vào thư mục `data/raw/`. *(Lưu ý: `.gitignore` đã được cấu hình để không đẩy các tệp dữ liệu dung lượng lớn này lên GitHub).*
+### 7.3. Tải dữ liệu từ openFDA và tạo 4 bảng CSV (2025 Q1 – 2026 Q1)
+
+**Bước 1: Tải JSON thô** (chạy tại thư mục gốc, đã `conda activate ds-env`):
+
+```powershell
+python src/download_data.py
+```
+
+Script đọc danh sách file từ `https://api.fda.gov/download.json`, tải các tệp `.json.zip` của 5 quý `2025q1`–`2026q1`, giải nén vào `data/raw/` và ghi nhật ký `data/raw/MANIFEST.json` (ngày cập nhật, số bản ghi, SHA-256). Các tùy chọn:
+
+```powershell
+python src/download_data.py --force                       # tải lại dù file đã có
+python src/download_data.py --quarters 2025q1 2025q2      # chỉ tải một số quý
+```
+
+Nếu có file tải lỗi, script in danh sách file lỗi và thoát với mã 1; chạy lại lệnh để tải bù (file đã tải xong sẽ được bỏ qua).
+
+**Bước 2: Tạo 4 bảng CSV** (`reports.csv`, `drugs.csv`, `reactions.csv`, `outcomes.csv` trong `data/processed/`). Có hai cách, kết quả như nhau:
+
+- Chạy **Cell 2** của `notebooks/01_collection_exploration.ipynb` (đặt `REBUILD = True` nếu muốn tạo lại), hoặc
+- Chạy trực tiếp từ terminal:
+
+```powershell
+python -c "import logging; logging.basicConfig(level=logging.INFO); from src.data_loader import build_consolidated_tables; build_consolidated_tables()"
+```
+
+Hàm này làm phẳng JSON lồng nhau thành 4 bảng, loại `unique_aer_id_number` trùng giữa các file (giữ bản ở quý muộn nhất), và dừng với lỗi nếu thiếu file hoặc thiếu quý. Các cột ngày/số vẫn là chuỗi, việc ép kiểu làm ở bước tiền xử lý.
+
+> `data/raw/` và `data/processed/` không được commit (xem `.gitignore`), nên mỗi thành viên cần chạy 2 bước trên sau khi clone repo.
 
 ### 7.4. Chạy các Notebook theo đúng thứ tự
 Khởi động JupyterLab từ thư mục gốc của dự án:
