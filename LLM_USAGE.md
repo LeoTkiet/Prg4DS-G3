@@ -1,6 +1,6 @@
 # Nhật ký Sử dụng Công cụ AI / LLM (`LLM_USAGE.md`)
 
-Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM đáng kể của các thành viên nhóm **Prg4DS-G3** trong quá trình thực hiện đồ án cuối kỳ môn **CSC17104 – Lập trình cho Khoa học Dữ liệu**, tuân thủ quy định tại **Mục 6 (Academic Integrity and Use of LLMs)** của đề cương đồ án.
+Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM đáng kể của các thành viên nhóm **Global Ban** trong quá trình thực hiện đồ án cuối kỳ môn **CSC17104 – Lập trình cho Khoa học Dữ liệu**, tuân thủ quy định tại **Mục 6 (Academic Integrity and Use of LLMs)** của đề cương đồ án.
 
 ## Nguyên tắc sử dụng AI của nhóm
 1. Chỉ sử dụng các công cụ LLM (ChatGPT, Claude, Gemini, GitHub Copilot...) với vai trò **gia sư hỗ trợ (tutor)**: giải thích khái niệm, tra cứu cú pháp thư viện (`pandas`, `scikit-learn`, `matplotlib`), gỡ lỗi (debug) hoặc gợi ý cấu trúc tổ chức dự án.
@@ -34,6 +34,14 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
   - Nhóm thống nhất loại bỏ hoàn toàn các năm trước 2025; cập nhật đồng bộ README, docstring trong `src/`, 3 notebook và mục lục.
   - Chỉnh `environment.yml` (bỏ package trùng lặp, đưa `conda-forge` lên trước, thêm `ipykernel`) và mở rộng mục 7 của README thành các bước cài đặt/kiểm tra/troubleshooting.
   - Các thay đổi được nhóm kiểm tra lại bằng `git diff` trước khi commit.
+
+### Lần 4 — Xác minh giấy phép CC0, tác giả, phương pháp thu thập, hạn chế dữ liệu và công trình công khai liên quan (2026-11-09)
+- **Thành viên:** Huỳnh Tuấn Kiệt (24120356)
+- **Công cụ:** Google Antigravity
+- **Đã hỏi gì:** Xác minh giấy phép CC0 1.0 Universal, tác giả/tổ chức phát hành (FDA CVM), nguồn gốc (openFDA manifest & API), phương pháp thu thập thực tế của dữ liệu Cảnh giác dược Thú y (thay cho mô tả remote sensing + field survey của đề xuất cũ), quần thể (population), phạm vi thời gian (2025 Q1–Q4 & 2026 Q1), các hạn chế/thiên lệch (limitations/biases), liệt kê các công trình/notebook/repo công khai liên quan kèm điểm khác biệt của đồ án nhóm, và đồng bộ bảng schema CSV giữa `README.md`, `data/data_dictionary.md` với `src/data_loader.py`.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - Đối chiếu trực tiếp với trang giấy phép (`open.fda.gov/license`), điều khoản sử dụng (`open.fda.gov/terms`) và quy trình báo cáo của FDA CVM: báo cáo bắt buộc 21 CFR 514.80 (Form FDA 1932) qua cổng **FDA Electronic Submissions Gateway (ESG / ESG NextGen)** với chuẩn **HL7 ICSR** theo **VICH GL35** (*CVM GFI #214*), và báo cáo tự nguyện qua biểu mẫu PDF **Form FDA 1932a** hoặc **Rational Questionnaire** trên **Safety Reporting Portal (SRP)**.
+  - Cập nhật chi tiết Mục 2 (`2.1`–`2.6`) trong `README.md`, Mục 1 (`1.1`–`1.6`) trong `notebooks/01_collection_exploration.ipynb` và `data/data_dictionary.md`: làm rõ chỉ khử trùng lặp phòng ngừa theo `unique_aer_id_number` (không dedupe theo `report_id` vì đó là mã đơn đăng ký thuốc NADA/ANADA), đồng bộ đầy đủ tên cột thực tế của 4 bảng `.csv` (bao gồm `source_file`, `quarter`, `species`, `age_min`, `active_ingredients`, `dose_*`, `frequency_*`...), và đối sánh chính xác với 4 nhóm công trình công khai (`openFDA Interactive Chart`, `FDA/openfda` & `VetClaw`, bài báo `arXiv:2510.01520` dùng đặc trưng hóa lý PubChem, cùng nghiên cứu của Xu et al., 2019 và Farrell et al., 2025 trên EudraVigilance Veterinary — EVV).
 
 ---
 
