@@ -96,15 +96,15 @@ Mỗi dòng = 1 phản ứng VeDDRA trong 1 báo cáo. Quan hệ 1:N với `repo
 
 ---
 
-## 4. Bảng `outcomes.csv` — Kết cục y khoa (Outcome-level)
+## 4. Bảng `outcomes.csv` — Kết quả lâm sàng (Clinical Outcome-level)
 
-Mỗi dòng = 1 kết cục trong 1 báo cáo. Quan hệ 1:N với `reports.csv`.
+Mỗi dòng = 1 kết quả lâm sàng trong 1 báo cáo. Quan hệ 1:N với `reports.csv`.
 
 | # | Tên cột (`outcomes.csv`) | Kiểu dữ liệu | JSON path / Nguồn gốc | Mô tả | Ghi chú |
 |---|---------|---------------|----------------|-------|---------|
 | 61 | `unique_aer_id_number` | `str` | *(FK)* | Khóa ngoại liên kết về `reports.csv` | **Foreign Key** |
-| 62 | `medical_status` | `str` | `outcome[].medical_status` | Kết cục y khoa: `Recovered/Normal`, `Died`, `Euthanized`, `Ongoing`, `Unknown` | **Leakage risk** cho Q6 (ML) |
-| 63 | `number_of_animals_affected` | `int/str` | `outcome[].number_of_animals_affected` | Số cá thể có kết cục này | |
+| 62 | `medical_status` | `str` | `outcome[].medical_status` | Kết quả lâm sàng: `Recovered/Normal`, `Died`, `Euthanized`, `Ongoing`, `Unknown` | **Leakage risk** cho Q6 (ML) |
+| 63 | `number_of_animals_affected` | `int/str` | `outcome[].number_of_animals_affected` | Số cá thể có kết quả lâm sàng này | |
 | 64 | `quarter` | `str` | *(loader metadata)* | Phân vùng quý (`2025q1`–`2026q1`) | |
 | 65 | `source_file` | `str` | *(loader metadata)* | Tên file JSON gốc | |
 
