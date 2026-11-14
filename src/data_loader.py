@@ -9,7 +9,7 @@ Chức năng:
   2. `drugs`: Danh sách thuốc nhúng trong `drug[]`, kèm cột `active_ingredients` (tên hoạt chất nối bằng ';').
      các cột liều `dose_*` và tần suất `frequency_value`, `frequency_unit` (làm phẳng từ `dose` và `frequency_of_administration`).
   3. `reactions`: Danh sách phản ứng bất lợi theo thuật ngữ VeDDRA (explode từ `reaction[]`).
-  4. `outcomes`: Kết cục y khoa của vật nuôi (explode từ `outcome[]`).
+  4. `outcomes`: Kết quả lâm sàng của vật nuôi (Clinical Outcome, explode từ `outcome[]`).
 Mọi giá trị giữ nguyên dạng chuỗi như file gốc; ép kiểu (ngày, số) làm ở bước tiền xử lý trong notebook.
 """
 
