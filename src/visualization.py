@@ -34,10 +34,14 @@ def plot_quarterly_volume(
     """
     if isinstance(tables, dict):
         quarter_df = pd.DataFrame(
-            {name: df["quarter"].value_counts() for name, df in tables.items() if "quarter" in df.columns}
-        ).sort_index()
+            {
+                name: df["quarter"].value_counts(dropna=False)
+                for name, df in tables.items()
+                if "quarter" in df.columns
+            }
+        ).fillna(0).astype(int).sort_index()
     else:
-        quarter_df = tables
+        quarter_df = tables.fillna(0).astype(int)
 
     fig = None
     if ax is None:
@@ -65,6 +69,8 @@ def plot_quarterly_volume(
         # Ghi số lượng trên đầu mỗi cột
         for rect in rects:
             height = rect.get_height()
+            if np.isnan(height) or height == 0:
+                continue
             ax.annotate(
                 f"{int(height / 1000)}k" if height >= 1000 else f"{int(height)}",
                 xy=(rect.get_x() + rect.get_width() / 2, height),
