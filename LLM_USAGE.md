@@ -43,6 +43,31 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
   - Đối chiếu trực tiếp với trang giấy phép (`open.fda.gov/license`), điều khoản sử dụng (`open.fda.gov/terms`) và quy trình báo cáo của FDA CVM: báo cáo bắt buộc 21 CFR 514.80 (Form FDA 1932) qua cổng **FDA Electronic Submissions Gateway (ESG / ESG NextGen)** với chuẩn **HL7 ICSR** theo **VICH GL35** (*CVM GFI #214*), và báo cáo tự nguyện qua biểu mẫu PDF **Form FDA 1932a** hoặc **Rational Questionnaire** trên **Safety Reporting Portal (SRP)**.
   - Cập nhật chi tiết Mục 2 (`2.1`–`2.6`) trong `README.md`, Mục 1 (`1.1`–`1.6`) trong `notebooks/01_collection_exploration.ipynb` và `data/data_dictionary.md`: làm rõ chỉ khử trùng lặp phòng ngừa theo `unique_aer_id_number` (không dedupe theo `report_id` vì đó là mã đơn đăng ký thuốc NADA/ANADA), đồng bộ đầy đủ tên cột thực tế của 4 bảng `.csv` (bao gồm `source_file`, `quarter`, `species`, `age_min`, `active_ingredients`, `dose_*`, `frequency_*`...), và đối sánh chính xác với 4 nhóm công trình công khai (`openFDA Interactive Chart`, `FDA/openfda` & `VetClaw`, bài báo `arXiv:2510.01520` dùng đặc trưng hóa lý PubChem, cùng nghiên cứu của Xu et al., 2019 và Farrell et al., 2025 trên EudraVigilance Veterinary — EVV).
 
+### Lần 5 — Triển khai Mục 2.1 EDA Tổng quan & Kiểm tra Toàn vẹn Schema trong Notebook 01 (Task T08) (2026-11-13)
+- **Thành viên:** Trần Ngô Uyên Nhi (`24120210`)
+- **Công cụ:** Google Antigravity (Gemini)
+- **Đã hỏi gì:** Hướng dẫn xây dựng các hàm kiểm tra và trực quan hóa tổng quan 4 bảng (`reports`, `drugs`, `reactions`, `outcomes`) theo yêu cầu Mục 3.2 của đề cương: thống kê kích thước (shape) và bộ nhớ, kiểm tra tính duy nhất của khóa chính `unique_aer_id_number`, phân biệt với `report_id`, kiểm tra khóa ngoại/khóa mồ côi (orphan keys), trùng lặp, bảng kế hoạch chuyển đổi kiểu dữ liệu và danh sách loại trừ cột hậu nghiệm chống rò rỉ dữ liệu (Data Leakage) cho bài toán ML.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - Áp dụng các đoạn mã kiểm tra toàn vẹn dữ liệu vào Mục 2.1 của `notebooks/01_collection_exploration.ipynb`: xác nhận 0 khóa mồ côi (`orphan_rows = 0`), kiểm tra độ bao phủ 89.66% của bảng `outcomes`.
+  - Viết module trực quan hóa dùng chung `src/visualization.py` (`plot_quarterly_volume`, `plot_missing_overview`) và tự chạy lại trên toàn bộ 94,412 dòng để ghi nhận số liệu thực tế vào các markdown note.
+  - Tự rà soát và bổ sung biện giải chuyên môn về lý do loại trừ các cột hậu nghiệm (`outcomes`, `treated_for_ae`, `duration`) để bảo vệ tính toàn vẹn của mô hình ML Q6.
+
+### Lần 6 — Tinh chỉnh Hệ thống Câu hỏi Q2 & Q5, Tái cấu trúc Module và Hoàn thiện EDA Đào sâu T10 (2026-11-15)
+- **Thành viên:** Trần Ngô Uyên Nhi (`24120210`)
+- **Công cụ:** Google Antigravity (Gemini & Claude)
+- **Đã hỏi gì:**
+  - Nhận xét và phản biện hệ thống 6 câu hỏi nghiên cứu: Đánh giá câu hỏi sinh học Q2 và đề xuất thay thế câu hỏi Q5 cũ (về độ trễ báo cáo) bằng câu hỏi dịch tễ đàn gia súc/gia cầm mới (*"Những yếu tố nào có liên quan đến tỷ lệ động vật bị ảnh hưởng trong tổng số động vật được điều trị ở mỗi đàn?"*).
+  - Đồng bộ phát biểu tiếng Việt chính thức của Q2 và Q5 trên toàn bộ tài liệu dự án (`README.md`, `data/data_dictionary.md`, `notebooks/02_analysis.ipynb`).
+  - Hỗ trợ xây dựng các cell phân tích cho Task T10 trong `notebooks/01_collection_exploration.ipynb`: quy đổi tuổi/cân nặng sinh học, trích xuất 964 báo cáo đàn hợp lệ để tính `attack_rate = affected / treated`, phân tích phân phối ngoại lai, kiểm tra cơ chế MAR.
+  - Tham vấn giải pháp tái cấu trúc kiến trúc Notebook 01 thành các phân đoạn module riêng biệt theo thành viên (`2.2` Nhi, `2.3` Kiệt, `2.4` Khang) nhằm tránh xung đột Git (merge conflict) khi làm việc nhóm và tinh giản các phân tích thống kê suy diễn để dành cho Notebook 02.
+  - Khắc phục cảnh báo `FutureWarning` trong Seaborn v0.13+ khi dùng `palette` không kèm `hue`.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - Nhóm thảo luận và thống nhất thay thế câu Q5 sang phân tích dịch tễ đàn gia súc/gia cầm vì đây là hướng đi đột phá, khai thác được các trường `number_of_animals_treated` và `number_of_animals_affected` thay vì chỉ tập trung vào chó/mèo.
+  - Kiểm tra trực tiếp trên dữ liệu: xác nhận 964 báo cáo đàn hợp lệ có `treated > 0`, phát hiện 13 ca ngoại lai `attack_rate > 1` (do sai lệch ghi nhận) để làm cơ sở cho bước kiểm tra độ vững D6.
+  - Áp dụng cấu trúc module hóa vào Notebook 01: tinh giản bớt phần kiểm định Wilson CI và Kruskal-Wallis (đưa sang `02_analysis.ipynb`), giữ lại trực quan phân phối và tương quan ban đầu.
+  - Sửa lỗi cú pháp Seaborn bằng cách gán `hue="species"` và `legend=False` ở các ô vẽ biểu đồ.
+  - Tự kiểm tra lại toàn bộ file notebook bằng lệnh kiểm tra cú pháp và git diff trước khi commit.
+
 ---
 
 ## Mẫu ghi nhận cho các phiên tiếp theo
