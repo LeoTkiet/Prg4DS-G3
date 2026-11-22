@@ -118,6 +118,6 @@ Mỗi dòng = 1 kết quả lâm sàng trong 1 báo cáo. Quan hệ 1:N với `r
 | `age_years` | Quy đổi `age_min` theo `age_unit` (`Day` $\rightarrow /365.25$, `Week` $\rightarrow /52.18$, `Month` $\rightarrow /12$) | Chuẩn hóa so sánh tuổi vật nuôi (Q2, Q6) |
 | `weight_kg` | Quy đổi `weight_min` theo `weight_unit` (`Pound` $\rightarrow \times 0.453592$, `Ounce` $\rightarrow \times 0.02835$, `Gram` $\rightarrow /1000$) | Chuẩn hóa so sánh cân nặng (Q2, Q6) |
 | `life_stage` | Phân nhóm từ `age_years` theo `species` (`Junior/Young`, `Adult`, `Senior`, `Unknown`) | Phân tầng rủi ro lâm sàng (Q2) |
-| `reporting_delay_days` | `original_receive_date - onset_date` (tính theo ngày) | Phân tích độ trễ báo cáo theo đối tượng gửi (Q5) |
+| `affected_ratio` (hoặc `attack_rate`) | `number_of_animals_affected / number_of_animals_treated` (ở báo cáo đàn gia súc/gia cầm) | Phân tích tỷ lệ động vật bị ảnh hưởng trong tổng số được điều trị ở mỗi đàn (Q5) |
 | `num_drugs` | Đếm số dòng thuốc (`drug_idx`) trên mỗi `unique_aer_id_number` | Xác định đa trị liệu (`polypharmacy` khi `num_drugs >= 2`) (Q2, Q4, Q6) |
 | `has_off_label_use` | `any(used_according_to_label == 'false')` hoặc có `off_label_use` trên báo cáo | Phân tích tác động dùng thuốc sai nhãn (Q4, Q6) |
