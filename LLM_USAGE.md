@@ -70,6 +70,17 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
 
 ---
 
+### Lần 5 — Phản biện Q1/Q6 và xây dựng EDA chuyên sâu Task T08 (NB02, NB03) (2026-11-16)
+- **Thành viên:** Đinh Công Khang (24120332) — với hỗ trợ từ AI coding agent.
+- **Công cụ:** OpenCode (model: opencode/big-pickle).
+- **Đã hỏi gì:** Nhận xét/phản biện hệ thống 6 câu hỏi nghiên cứu trong `README.md` (trọng tâm Q1, Q6); xây dựng các cell phân tích EDA chuyên sâu cho Task T08 trong `notebooks/02_analysis.ipynb` (Q1) và `notebooks/03_ml_question.ipynb` (Q6); sửa `FutureWarning` groupby/pivot Categorical, định dạng bảng bằng `display()`, và xử lý hiển thị `veddra_term_name` quá dài.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - Đã rà soát nội dung phản biện (phạm vi, thiên lệch dữ liệu tự nguyện, giới hạn suy luận mùa vụ/nhân quả, leakage & drift cho Q6) và điều chỉnh cho phù hợp với rubric/đề tài trước khi áp dụng.
+  - Các cell notebook do AI gợi ý/sinh (load & join `reports`↔`reactions`/`drugs`, `log_row_count_change`, tỷ trọng theo loài×quý, bootstrap CI, χ²/Cramér’s V, EDA nhãn `serious_ae`, tín hiệu sinh học/bối cảnh, so sánh train 2025Q1–Q4 vs test 2026Q1) cần được **chạy lại trên dữ liệu thực tế**, kiểm chứng số liệu/biểu đồ, đơn vị quan sát và giả định thống kê; tuyệt đối không dùng `outcome`/`treated_for_ae`/`duration` làm đặc trưng dự báo Q6.
+  - Các chỉnh sửa trình bày (`display/style`, `observed=True`, rút gọn nhãn VeDDRA khi hiển thị nhưng giữ giá trị gốc cho phân tích) đã được áp dụng vào notebook và cần được kiểm tra trực quan/khả năng tái lập (Restart Kernel & Run All) trước khi commit.
+
+---
+
 ## Mẫu ghi nhận cho các phiên tiếp theo
 
 ```markdown
