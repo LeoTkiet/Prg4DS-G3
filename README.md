@@ -151,7 +151,7 @@ Nhóm gồm $n = 3$ thành viên $\rightarrow$ xây dựng **$2 \times 3 = 6$ c�
 Theo yêu cầu Mục 3.3, mỗi câu hỏi Non-ML phải thỏa mãn **ít nhất 2 tiêu chí** và cả nhóm phải bao phủ **ít nhất 4/6 tiêu chí** (kế hoạch của nhóm bao phủ trọn vẹn **6/6 tiêu chí D1–D6**):
 - **D1 (Combining data):** Gộp nhiều bảng chuẩn hóa (`reports`, `drugs`, `reactions`, `outcomes`) hoặc gộp 4 phân vùng quý năm 2025, kiểm tra số dòng và khóa không khớp trước/sau khi gộp.
 - **D2 (Reshaping & time):** Pivot/melt, gom nhóm theo quý (`2025Q1`–`2026Q1`), cửa sổ trượt (rolling window), so sánh cùng kỳ (period-over-period) và độ trễ thời gian (lags).
-- **D3 (Derived variables):** Tạo biến mới có cơ sở khoa học (`age_years`, `weight_kg`, `life_stage`, `num_drugs` / polypharmacy, `reporting_delay_days`, `has_off_label_use`).
+- **D3 (Derived variables):** Tạo biến mới có cơ sở khoa học (`age_years`, `weight_kg`, `life_stage`, `num_drugs` / polypharmacy, `attack_rate`, `has_off_label_use`).
 - **D4 (Controlling for a confounder):** Kiểm tra xem quy luật có còn giữ nguyên khi phân tầng theo biến nhiễu thứ ba (loài, nhóm tuổi, người báo cáo, đa trị liệu).
 - **D5 (Quantifying uncertainty):** Khoảng tin cậy 95% (Bootstrap CI), kiểm định giả thuyết thống kê ($\chi^2$, Kruskal-Wallis, Mann-Whitney U) và độ lớn hiệu ứng (Cramér's V, Odds Ratio).
 - **D6 (Robustness check):** Kiểm tra độ nhạy của kết luận khi thay đổi ngưỡng lọc ngoại lai (outlier threshold), quy tắc xử lý nhóm `'Unknown'` hoặc khung thời gian.
