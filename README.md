@@ -77,7 +77,7 @@ Do đặc thù của hệ thống báo cáo cảnh giác dược hậu mại, b�
 ### 2.4. Cấu trúc Schema JSON lồng nhau & Thiết kế 4 Bảng Quan hệ Phẳng
 Mỗi phần tử trong `results[]` đại diện cho một báo cáo sự kiện (định danh duy nhất bởi `unique_aer_id_number`; không nhầm với `report_id` là mã đăng ký thuốc NADA/ANADA). Để tránh bùng nổ tổ hợp (Cartesian explosion) khi một báo cáo chứa nhiều thuốc (`drug[]`), nhiều triệu chứng (`reaction[]`) và nhiều kết cục (`outcome[]`), nhóm thiết kế quy trình **flatten/normalize** (trong `src/data_loader.py`) thành **4 bảng quan hệ phẳng chuẩn hóa** định dạng `.csv` lưu tại `data/processed/`, bao gồm tổng cộng **77 trường dữ liệu gốc/phẳng hóa**:
 
-| Bảng chuẩn hóa | Khóa liên kết | Quy mô thực tế (5 quý) | Các trường thông tin cốt lõi (khớp 100% schema của `src/data_loader.py`) |
+| Bảng chuẩn hóa | Khóa liên kết | Quy mô thực tế (5 quý) | Các trường thông tin cốt lõi |
 |---|:---:|:---:|---|
 | **`reports.csv`** | `unique_aer_id_number` (PK) | **94.412** dòng $\times$ **33** cột | `unique_aer_id_number`, `report_id`, `original_receive_date`, `onset_date`, `primary_reporter`, `secondary_reporter`, `type_of_information`, `serious_ae`, `treated_for_ae`, `foreign_or_domestic`, `time_between_exposure_and_onset`, `number_of_animals_affected`, `number_of_animals_treated`, các trường sinh trắc học phẳng hóa từ `animal` (`species`, `gender`, `reproductive_status`, `female_physio_status`, `breed_component`, `is_crossbred`, `age_min`, `age_max`, `age_unit`, `age_qualifier`, `weight_min`, `weight_max`, `weight_unit`, `weight_qualifier`), `duration_value`, `duration_unit`, `health_prior_condition`, `health_prior_assessed_by`, `quarter`, `source_file` |
 | **`drugs.csv`** | `unique_aer_id_number` (FK) | **174.123** dòng $\times$ **31** cột | `drug_idx`, `active_ingredients` (nối bằng `';'`), `brand_name`, `dosage_form`, `route`, `atc_vet_code`, `manufacturer_name`, `used_according_to_label`, `off_label_use`, `lot_number`, `lot_expiration`, `dose_numerator`, `dose_numerator_unit`, `dose_denominator`, `dose_denominator_unit`, `frequency_value`, `frequency_unit`, `first_exposure_date`, `last_exposure_date`, `admin_date`, `admin_interval`, `admin_interval_unit`, `previous_exposure_to_drug`, `previous_ae_to_drug`, `ae_abated_after_stopping_drug`, `ae_reappeared_after_restarting_drug`, `quarter`, `source_file`... |
@@ -165,14 +165,14 @@ Theo yêu cầu Mục 3.3, mỗi câu hỏi Non-ML phải thỏa mãn **ít nh�
 
 | Mã câu | Chủ sở hữu | Nội dung câu hỏi nghiên cứu & Động lực thực tiễn | D1 | D2 | D3 | D4 | D5 | D6 |
 |:---:|---|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Q1** | **M1 — Khang** | **Đặc trưng phản ứng theo loài & Xu hướng theo quý (2025–2026 Q1):** Những phản ứng bất lợi (VeDDRA terms) nào chiếm tỷ trọng cao nhất ở Chó, Mèo và các loài khác trong năm 2025, và xu hướng biến động theo quý (kèm dấu hiệu mùa vụ trong phạm vi 1 năm) của chúng diễn biến ra sao khi bước sang quý đầu năm 2026 (Q1)?<br>🎯 *Hỗ trợ bác sĩ thú y và hãng dược dự báo nhu cầu giám sát phản ứng phụ theo mùa.* | ✅ | ✅ | | | ✅ | |
-| **Q2** | **M2 — Nhi** | **Đặc điểm sinh học & Nguy cơ sự cố nghiêm trọng:** Những đặc điểm sinh học nào (giai đoạn sống, trọng lượng cơ thể, giới tính) có liên quan đến các biến cố bất lợi nghiêm trọng, sau khi đã kiểm soát yếu tố loài và số lượng thuốc sử dụng?<br>🎯 *Giúp bác sĩ thú y và hệ thống triage phân tầng nguy cơ lâm sàng, nhận diện nhóm thú nuôi dễ tổn thương (thú già/non, nhẹ cân) để điều chỉnh liều và theo dõi sát.* | | | ✅ | ✅ | ✅ | ✅ |
+| **Q1** | **M1 — Khang** | **Đặc trưng phản ứng theo loài & Xu hướng theo quý (2025–2026 Q1):** Những phản ứng bất lợi (VeDDRA terms) nào chiếm tỷ trọng cao nhất ở **Chó, Mèo** và **các loài khác** trong năm 2025, và xu hướng biến động theo quý (so sánh cùng kỳ) của các phản ứng hàng đầu này diễn biến ra sao khi bước sang **2026 Q1**?<br>🎯 *Hỗ trợ bác sĩ thú y và hãng dược dự báo nhu cầu giám sát phản ứng phụ theo mùa.* | ✅ | ✅ | | | ✅ | |
+| **Q2** | **M2 — Nhi** | **Đặc điểm sinh học & Nguy cơ sự cố nghiêm trọng:** Phân tích mối liên hệ giữa các đặc điểm sinh học (`life_stage`, `age_years`, `weight_kg`, `gender`) với biến cố nghiêm trọng (`serious_ae`), kiểm soát yếu tố loài và đa trị liệu.<br>🎯 *Giúp bác sĩ thú y và hệ thống triage phân tầng nguy cơ lâm sàng, nhận diện nhóm thú nuôi dễ tổn thương (thú già/non, nhẹ cân) để điều chỉnh liều và theo dõi sát.* | | | ✅ | ✅ | ✅ | ✅ |
 | **Q3** | **M3 — Kiệt** | **Tương tác Hoạt chất – Phản ứng giữa Safety Issue và Lack of Efficacy:** Các hoạt chất (`active_ingredients`) và đường dùng (`route`) nào có tỷ suất đồng xuất hiện (Reporting Odds Ratio) đặc trưng nhất với từng phản ứng cụ thể, và pattern này khác biệt ra sao giữa nhóm **Safety Issue** và **Lack Of Expected Effectiveness** trong năm 2025?<br>🎯 *Phân biệt nhóm thuốc có nguy cơ độc tính sinh học với nhóm thuốc đang bị giảm hiệu lực/kháng thuốc (như thuốc giun tim, bọ chét).* | ✅ | ✅ | | ✅ | ✅ | |
 | **Q4** | **M3 — Kiệt** | **Tác động của dùng thuốc sai nhãn (`off-label`) & Đa trị liệu:** Việc dùng thuốc off-label kết hợp với đa trị liệu (`polypharmacy`) trong năm 2025 có liên hệ như thế nào với mức độ nghiêm trọng (`serious_ae`) và kết quả lâm sàng (`outcome`) khi đã kiểm soát biến nhiễu là **loài vật nuôi** và **đối tượng báo cáo (`primary_reporter`)**?<br>🎯 *Cung cấp bằng chứng định lượng cảnh báo rủi ro khi dùng thuốc trái nhãn hướng dẫn.* | ✅ | | ✅ | ✅ | | ✅ |
-| **Q5** | **M2 — Nhi** | **Tỷ lệ động vật bị ảnh hưởng trong đàn (Attack Rate) ở Gia súc, Gia cầm:** Những yếu tố nào có liên quan đến tỷ lệ động vật bị ảnh hưởng trong tổng số động vật được điều trị ở mỗi đàn?<br>🎯 *Giúp cơ quan thú y trang trại và hãng dược ước lượng tỷ lệ lan rộng (attack rate) của phản ứng bất lợi trong toàn đàn khi áp dụng thuốc hàng loạt trên các loài gia súc, gia cầm.* | ✅ | | ✅ | ✅ | ✅ | ✅ |
+| **Q5** | **M2 — Nhi** | **Tỷ lệ động vật bị ảnh hưởng trong đàn (Attack Rate) ở Gia súc, Gia cầm:** Xác định các yếu tố liên quan đến tỷ lệ động vật bị ảnh hưởng ở đàn (`attack_rate`), phân tích ảnh hưởng của loài gia súc, quy mô đàn và đường dùng thuốc.<br>🎯 *Giúp cơ quan thú y trang trại và hãng dược ước lượng tỷ lệ lan rộng (attack rate) của phản ứng bất lợi trong toàn đàn khi áp dụng thuốc hàng loạt trên các loài gia súc, gia cầm.* | ✅ | | ✅ | ✅ | ✅ | ✅ |
 
 ### 4.2. Thiết kế Câu hỏi Học máy Q6 (Owner: M1 — Khang)
-- **Câu hỏi Q6:** *Dựa trên các đặc trưng sẵn có ngay tại thời điểm tiếp nhận báo cáo từ dữ liệu lịch sử **2025 (Q1–Q4)** (đặc điểm sinh học của vật nuôi, số lượng thuốc, đường dùng, trạng thái dùng đúng nhãn/off-label, hoạt chất chính, đối tượng báo cáo và thời điểm trong năm), mô hình học máy có thể dự đoán chính xác khả năng một báo cáo trong **quý đầu năm 2026 (Q1)** trở thành **sự cố nghiêm trọng (`serious_ae = True`)** ở mức độ nào? Những đặc trưng nào quan trọng nhất và mô hình thường dự đoán sai ở những phân nhóm nào của năm 2026?*
+- **Câu hỏi Q6:** *Khi một báo cáo sự cố bất lợi mới được gửi đến hệ thống trong **năm 2026 (Q1)**, mô hình học máy được huấn luyện trên dữ liệu lịch sử **2025 (Q1–Q4)** có thể dự đoán chính xác khả năng sự cố đó thuộc nhóm **Nghiêm trọng (`serious_ae = True`)** dựa trên thông tin ban đầu của vật nuôi, thuốc và người báo cáo ở mức độ nào? Ngoài ra, tổng lượng báo cáo nghiêm trọng theo tuần/tháng trong Q1/2026 có khớp với xu hướng dự báo từ năm 2025 hay không?*
 - **Đáp ứng 6 tiêu chuẩn bắt buộc của Mục 3.3 (Requirements for the ML question):**
   1. **User & Chống rò rỉ dữ liệu (Leakage Prevention):** Phục vụ hệ thống phân loại ưu tiên (triage) hồ sơ của FDA CVM. Loại bỏ triệt để các cột hậu nghiệm gây rò rỉ như `outcome` (Died/Euthanized/Recovered), `treated_for_ae` và `duration`.
   2. **Chia tập dữ liệu theo thời gian (Time-based Split):**
@@ -198,21 +198,21 @@ flowchart LR
     P4 --> P5
 ```
 
-### Giai đoạn 1: Thu thập Dữ liệu & Xây dựng Pipeline Đọc JSON (Data Ingestion) `[ĐÃ HOÀN THÀNH]`
+### Giai đoạn 1: Thu thập Dữ liệu & Xây dựng Pipeline Đọc JSON (Data Ingestion)
 - **Mục tiêu:** Tải đầy đủ 5 tệp dữ liệu quý từ `2025q1` đến `2026q1` từ [openFDA Downloads](https://open.fda.gov/data/downloads/) vào `data/raw/` và viết hàm làm phẳng trong `src/data_loader.py`.
 - **Kết quả thực tế:**
   - Hoàn thiện pipeline tải và kiểm tra SHA-256 (`src/download_data.py`), lưu `MANIFEST.json`.
   - Hoàn thiện `src/data_loader.py`: tách và làm phẳng cấu trúc JSON thành 4 bảng quan hệ với 77 cột dữ liệu gốc (`reports.csv`: 94.412 dòng, `drugs.csv`: 174.123 dòng, `reactions.csv`: 270.244 dòng, `outcomes.csv`: 85.143 dòng), khử trùng lặp theo `unique_aer_id_number` (giữ bản ở quý muộn nhất).
   - Hoàn thành từ điển dữ liệu [Data Dictionary v2](data/data_dictionary.md) chi tiết 77 cột và 21 biến dẫn xuất.
 
-### Giai đoạn 2: Khám phá Dữ liệu (EDA) & Tiền xử lý Chuẩn hóa (`01_collection_exploration.ipynb`) `[ĐÃ HOÀN THÀNH]`
+### Giai đoạn 2: Khám phá Dữ liệu (EDA) & Tiền xử lý Chuẩn hóa (`01_collection_exploration.ipynb`)
 - **Mục tiêu:** Hoàn thành toàn bộ Mục 3.1 và 3.2 của đề cương và xuất dữ liệu sạch ra `data/processed/`.
 - **Kết quả thực tế:**
   - Quy đổi và chuẩn hóa thành công các đại lượng sinh trắc học sang hệ SI (`age_years`, `weight_kg`), phân loại `life_stage` và lọc bỏ cá thể `Human`.
   - Phân tích sâu cơ chế dữ liệu khuyết (Missing Data Mechanism): nhận diện cơ chế MAR rõ rệt theo đối tượng báo cáo (`primary_reporter`), bóc tách tình trạng khuyết ẩn (`brand_name`, `manufacturer_name` bị FDA gắn nhãn `'MSK'`, và 30.56% `outcomes` mang giá trị `'Outcome Unknown'`).
   - Xây dựng 21 biến dẫn xuất có cơ sở khoa học phục vụ các câu hỏi nghiên cứu Q1–Q6. Notebook chạy hoàn tất từ đầu đến cuối không lỗi và đã lưu toàn bộ biểu đồ EDA.
 
-### Giai đoạn 3: Phân tích 5 Câu hỏi Non-ML (`02_analysis.ipynb`) `[ĐANG TIẾN HÀNH]`
+### Giai đoạn 3: Phân tích 5 Câu hỏi Non-ML (`02_analysis.ipynb`)
 - **Mục tiêu:** Mỗi thành viên triển khai các câu hỏi mình sở hữu theo đúng cấu trúc Mục 3.4: *(1) Mô tả tiền xử lý bằng Markdown + in số dòng trước/sau mỗi bước lọc/gộp $\rightarrow$ (2) Giải thích phương pháp & tiêu chí D1–D6 $\rightarrow$ (3) Ít nhất 2 biểu đồ chuẩn chỉnh + trả lời bằng số liệu cụ thể & nêu hạn chế*.
 - **Phân công thực hiện & Phân tách module:**
   - Để tránh xung đột git khi 3 thành viên cùng commit song song vào một notebook lớn, nhóm áp dụng kiến trúc module:
@@ -222,7 +222,7 @@ flowchart LR
     - `notebooks/02c_analysis_kiet.ipynb`: Q3 (ROR Hoạt chất – Phản ứng) và Q4 (Off-label & Polypharmacy) (Kiệt phụ trách).
   - Phản biện chéo: Q1 do Kiệt review; Q2 & Q5 do Khang review; Q3 & Q4 do Nhi review.
 
-### Giai đoạn 4: Xây dựng & Kiểm thử Mô hình Học máy trên năm 2026 (`03_ml_question.ipynb`) `[ĐÃ HOÀN THÀNH THỰC NGHIỆM]`
+### Giai đoạn 4: Xây dựng & Kiểm thử Mô hình Học máy trên năm 2026 (`03_ml_question.ipynb`)
 - **Mục tiêu:** Hoàn thành câu hỏi Q6 đáp ứng trọn vẹn 6 yêu cầu ML của đề cương theo chuẩn Time-based Split.
 - **Kết quả thực tế:**
   - Xây dựng Pipeline chống rò rỉ dữ liệu nghiêm ngặt: loại bỏ toàn bộ thông tin hậu nghiệm (`outcome`, `treated_for_ae`, `duration`).
@@ -231,7 +231,7 @@ flowchart LR
   - Xác lập ngưỡng phân loại tối ưu $0.365$ từ Out-of-Fold 2025, đạt Recall **82.23%** trên tập Test 2026 Q1.
   - Phân tích tầm quan trọng bằng Permutation Importance và rà soát tính ổn định phân phối (Temporal Stability) hàng tuần.
 
-### Giai đoạn 5: Tổng kết, Đảm bảo Tái lập (Reproducibility) & Chuẩn bị Bảo vệ `[ĐANG TIẾN HÀNH]`
+### Giai đoạn 5: Tổng kết, Đảm bảo Tái lập (Reproducibility) & Chuẩn bị Bảo vệ
 - **Mục tiêu:** Hoàn thiện Mục 3.5 (Summary & Individual Reflections), cập nhật `README.md`, `LLM_USAGE.md` và `slides.pdf`.
 - **Kiểm tra cuối cùng:** Rà soát chéo giữa các thành viên, xóa môi trường tạm, kiểm tra khả năng chạy lại trơn tru của toàn bộ pipeline từ thu thập đến ML.
 
