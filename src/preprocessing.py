@@ -192,7 +192,10 @@ def parse_fda_dates(
     """
     Chuyển đổi các cột ngày dạng chuỗi 'YYYYMMDD' sang `datetime64[ns]` (lưu ở `<col>_dt`),
     đồng thời trích xuất `receive_year`, `receive_month`, `year_quarter`, `receive_week_in_q`
-    và `reporting_delay_days` (lọc ngoại lai ngoài [0, max_delay_days]).
+    (1..14 cho các quý 92 ngày) và `reporting_delay_days` (lọc ngoại lai ngoài [0, max_delay_days]).
+
+    Lưu ý: Các chuỗi ngày không đầy đủ (chỉ có năm `YYYY` hoặc `YYYYMM`) được chuyển thành `NaT`
+    bằng `errors='coerce'` để tránh suy đoán ngày sai khi tính `reporting_delay_days`.
     """
     out = df.copy()
     for col in date_cols:
@@ -257,6 +260,50 @@ def standardize_animal_age_and_weight(df: pd.DataFrame) -> pd.DataFrame:
         out["weight_kg"] = weight_k.where((weight_k > 0) & (weight_k <= weight_cap))
 
     return out
+
+
+def attach_drug_summary(
+    reports_df: pd.DataFrame,
+    drugs_df: pd.DataFrame,
+) -> pd.DataFrame:
+    """
+    Gắn các đặc trưng tổng hợp thuốc cấp báo cáo (`num_drugs`, `has_off_label_use`,
+    `route_primary`, `dosage_form_primary`, `top_active_ingredients`) vào `reports_df`
+    mà không chạy lại toàn bộ bước làm sạch `reports`.
+    """
+    df = reports_df.copy()
+    if drugs_df is None or len(drugs_df) == 0:
+        return df
+
+    d_sub = drugs_df[drugs_df[KEY].isin(df[KEY])].copy()
+    drug_counts = d_sub.groupby(KEY).size()
+    df["num_drugs"] = df[KEY].map(drug_counts).fillna(0).astype("Int64")
+
+    # Cờ off-label cấp báo cáo: có bất kỳ thuốc nào used_according_to_label == 'false' hoặc có off_label_use
+    has_off = pd.Series(False, index=d_sub.index)
+    if "used_according_to_label" in d_sub.columns:
+        has_off |= d_sub["used_according_to_label"].astype(str).str.strip().str.lower().eq("false")
+    if "off_label_use" in d_sub.columns:
+        has_off |= _normalize_placeholder_to_nan(d_sub["off_label_use"]).notna()
+    off_keys = set(d_sub.loc[has_off, KEY].unique())
+    df["has_off_label_use"] = df[KEY].isin(off_keys).astype("Int64")
+
+    # Đặc trưng thuốc chính đầu tiên (route_primary, dosage_form_primary, top_active_ingredients)
+    for src_col, dst_col in (
+        ("route", "route_primary"),
+        ("dosage_form", "dosage_form_primary"),
+        (
+            "active_ingredients_clean" if "active_ingredients_clean" in d_sub.columns else "active_ingredients",
+            "top_active_ingredients",
+        ),
+    ):
+        if src_col in d_sub.columns:
+            valid_d = d_sub[[KEY, src_col]].copy()
+            valid_d[src_col] = _normalize_placeholder_to_nan(valid_d[src_col])
+            first_map = valid_d.dropna(subset=[src_col]).drop_duplicates(KEY).set_index(KEY)[src_col]
+            df[dst_col] = df[KEY].map(first_map).fillna("Unknown")
+
+    return df
 
 
 def clean_reports(
@@ -351,31 +398,7 @@ def clean_reports(
 
     # 6. Tổng hợp đặc trưng cấp báo cáo từ bảng drugs (nếu có)
     if drugs_df is not None and len(drugs_df) > 0:
-        d_sub = drugs_df[drugs_df[KEY].isin(df[KEY])].copy()
-        drug_counts = d_sub.groupby(KEY).size()
-        df["num_drugs"] = df[KEY].map(drug_counts).fillna(0).astype("Int64")
-
-        # Cờ off-label cấp báo cáo: có bất kỳ thuốc nào used_according_to_label == 'false' hoặc có off_label_use
-        has_off = pd.Series(False, index=d_sub.index)
-        if "used_according_to_label" in d_sub.columns:
-            has_off |= d_sub["used_according_to_label"].astype(str).str.strip().str.lower().eq("false")
-        if "off_label_use" in d_sub.columns:
-            has_off |= _normalize_placeholder_to_nan(d_sub["off_label_use"]).notna()
-        off_keys = set(d_sub.loc[has_off, KEY].unique())
-        df["has_off_label_use"] = df[KEY].isin(off_keys).astype("Int64")
-
-        # Đặc trưng thuốc chính đầu tiên (route_primary, dosage_form_primary, top_active_ingredients)
-        for src_col, dst_col in (
-            ("route", "route_primary"),
-            ("dosage_form", "dosage_form_primary"),
-            ("active_ingredients_clean" if "active_ingredients_clean" in d_sub.columns else "active_ingredients",
-             "top_active_ingredients"),
-        ):
-            if src_col in d_sub.columns:
-                valid_d = d_sub[[KEY, src_col]].copy()
-                valid_d[src_col] = _normalize_placeholder_to_nan(valid_d[src_col])
-                first_map = valid_d.dropna(subset=[src_col]).drop_duplicates(KEY).set_index(KEY)[src_col]
-                df[dst_col] = df[KEY].map(first_map).fillna("Unknown")
+        df = attach_drug_summary(df, drugs_df)
 
     stats["reports_rows_clean"] = len(df)
     return df.reset_index(drop=True), stats
@@ -572,7 +595,7 @@ def run_core_preprocessing(
     """
     audit: Dict[str, int] = {}
 
-    # Bước 1: Làm sạch reports sơ bộ (lọc Human) để lấy danh sách khóa hợp lệ
+    # Bước 1: Làm sạch reports một lần duy nhất (lọc Human, parse ngày, chuẩn hóa sinh trắc học)
     reports_base, s_rep = clean_reports(tables["reports"], drugs_df=None, verbose=verbose)
     valid_ids = set(reports_base[KEY].unique())
 
@@ -581,8 +604,8 @@ def run_core_preprocessing(
     reactions_clean, s_rea = clean_reactions(tables["reactions"], valid_ids, verbose=verbose)
     outcomes_clean, s_out = clean_outcomes(tables["outcomes"], valid_ids, verbose=verbose)
 
-    # Bước 3: Bổ sung các biến tổng hợp cấp báo cáo từ drugs_clean vào reports_clean
-    reports_clean, s_rep = clean_reports(tables["reports"], drugs_df=drugs_clean, verbose=False)
+    # Bước 3: Gắn các biến tổng hợp cấp báo cáo từ drugs_clean trực tiếp vào reports_base
+    reports_clean = attach_drug_summary(reports_base, drugs_clean)
 
     for d in (s_rep, s_drg, s_rea, s_out):
         audit.update(d)
@@ -633,23 +656,87 @@ def save_clean_tables(
     return saved
 
 
+# Kiểu dữ liệu cố định khi đọc lại 4 bảng sạch nhằm tránh Pandas ép nhầm mã/ngày chuỗi sang float/int
+_CLEAN_DTYPES: Dict[str, Dict[str, str]] = {
+    "reports": {
+        KEY: "string",
+        "report_id": "string",
+        "original_receive_date": "string",
+        "onset_date": "string",
+        "quarter": "string",
+        "source_file": "string",
+        "year_quarter": "string",
+        "receive_year": "Int64",
+        "receive_month": "Int64",
+        "receive_week_in_q": "Int64",
+        "number_of_animals_affected": "Int64",
+        "number_of_animals_treated": "Int64",
+        "serious": "Int64",
+        "num_drugs": "Int64",
+        "has_off_label_use": "Int64",
+    },
+    "drugs": {
+        KEY: "string",
+        "first_exposure_date": "string",
+        "last_exposure_date": "string",
+        "lot_expiration": "string",
+        "manufacturing_date": "string",
+        "product_ndc": "string",
+        "atc_vet_code": "string",
+        "quarter": "string",
+        "source_file": "string",
+        "drug_idx": "Int64",
+    },
+    "reactions": {
+        KEY: "string",
+        "veddra_term_code": "string",
+        "veddra_version": "string",
+        "quarter": "string",
+        "source_file": "string",
+        "number_of_animals_affected": "Int64",
+    },
+    "outcomes": {
+        KEY: "string",
+        "quarter": "string",
+        "source_file": "string",
+        "number_of_animals_affected": "Int64",
+    },
+}
+
+
 def load_clean_tables(
     clean_dir: str | Path = "data/processed/clean",
 ) -> Dict[str, pd.DataFrame]:
-    """Đọc lại 4 bảng đã tiền xử lý sạch từ `data/processed/clean/` với kiểu ngày tháng chuẩn."""
+    """
+    Đọc lại 4 bảng đã tiền xử lý sạch từ `data/processed/clean/` với kiểu dữ liệu được khóa rõ ràng:
+    - Cột ngày chuẩn hóa (`*_dt`) đọc dạng `datetime64[ns]`.
+    - Cột khóa/mã định danh/ngày thô (`unique_aer_id_number`, `report_id`, `original_receive_date`,
+      `onset_date`, `veddra_term_code`, `product_ndc`, ...) giữ nguyên kiểu chuỗi (`string`).
+    - Cột số nguyên có thể khuyết (`serious`, `num_drugs`, `number_of_animals_*`, ...) giữ kiểu `Int64`.
+    """
     p = Path(clean_dir)
     reports = pd.read_csv(
         p / "reports.csv",
+        dtype=_CLEAN_DTYPES["reports"],
         parse_dates=["original_receive_date_dt", "onset_date_dt"],
         low_memory=False,
     )
     drugs = pd.read_csv(
         p / "drugs.csv",
+        dtype=_CLEAN_DTYPES["drugs"],
         parse_dates=["first_exposure_date_dt", "last_exposure_date_dt"],
         low_memory=False,
     )
-    reactions = pd.read_csv(p / "reactions.csv", low_memory=False)
-    outcomes = pd.read_csv(p / "outcomes.csv", low_memory=False)
+    reactions = pd.read_csv(
+        p / "reactions.csv",
+        dtype=_CLEAN_DTYPES["reactions"],
+        low_memory=False,
+    )
+    outcomes = pd.read_csv(
+        p / "outcomes.csv",
+        dtype=_CLEAN_DTYPES["outcomes"],
+        low_memory=False,
+    )
     return {
         "reports": reports,
         "drugs": drugs,

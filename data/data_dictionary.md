@@ -7,10 +7,16 @@
 > **Giấy phép:** Creative Commons CC0 1.0 Universal (Public Domain Dedication)  
 > **Phạm vi thời gian:** 5 phân vùng quý liên tiếp (`2025q1`, `2025q2`, `2025q3`, `2025q4`, `2026q1`)  
 > **Quy mô toàn bộ cơ sở dữ liệu:**
-> - `reports.csv`: **94.412** dòng (mỗi dòng là 1 báo cáo duy nhất — Unit of Observation) $\times$ **33** cột
-> - `drugs.csv`: **174.123** dòng (mỗi dòng là 1 thuốc trong báo cáo) $\times$ **31** cột
-> - `reactions.csv`: **270.244** dòng (mỗi dòng là 1 thuật ngữ VeDDRA) $\times$ **8** cột
-> - `outcomes.csv`: **85.143** dòng (mỗi dòng là 1 kết cục lâm sàng) $\times$ **5** cột  
+> - **Dữ liệu phẳng thô (`data/processed/`, đầu ra của `src/data_loader.py`):**
+>   - `reports.csv`: **94.412** dòng (mỗi dòng là 1 báo cáo duy nhất — Unit of Observation) $\times$ **33** cột
+>   - `drugs.csv`: **174.123** dòng (mỗi dòng là 1 thuốc trong báo cáo) $\times$ **31** cột
+>   - `reactions.csv`: **270.244** dòng (mỗi dòng là 1 thuật ngữ VeDDRA) $\times$ **8** cột
+>   - `outcomes.csv`: **85.143** dòng (mỗi dòng là 1 kết cục lâm sàng) $\times$ **5** cột
+> - **Dữ liệu sạch chuẩn hóa (`data/processed/clean/`, đầu ra của `src/preprocessing.py` — Task T14):**
+>   - `reports.csv`: **93.812** dòng thú y (đã loại 600 ca `Human`) $\times$ **49** cột (bổ sung ngày `*_dt`, biến sinh trắc học, biến tổng hợp thuốc)
+>   - `drugs.csv`: **173.221** dòng $\times$ **31** cột (đã loại 3 cột `'MSK'`/nhiễu: `brand_name`, `manufacturer_name`, `lot_number`; bổ sung `*_dt` và `active_ingredients_clean`)
+>   - `reactions.csv`: **267.848** dòng $\times$ **8** cột (đã khử 570 dòng trùng hoàn toàn và 8 cặp trùng `(unique_aer_id_number, veddra_term_code)`)
+>   - `outcomes.csv`: **84.543** dòng $\times$ **6** cột (bổ sung cờ `is_outcome_known`)
 > **Tổng cộng trường dữ liệu gốc/phẳng hóa:** **77** cột
 
 ---
@@ -138,19 +144,25 @@ Các biến mới được tạo ra trong quá trình Tiền xử lý (Mục 3.2
 
 | Biến dẫn xuất | Kiểu dữ liệu | Bảng gốc & Công thức quy đổi | Ý nghĩa lâm sàng & Mục đích sử dụng | Câu hỏi áp dụng |
 |---|:---:|---|---|:---:|
-| `year` | `int/str` | `original_receive_date.str[:4]` hoặc 4 ký tự đầu của `quarter` | Phân đoạn dữ liệu lịch sử năm 2025 vs. năm 2026 | Q1, Q6 |
+| `year` / `receive_year` | `Int64` | `original_receive_date_dt.dt.year` (hoặc 4 ký tự đầu của `quarter`) | Phân đoạn dữ liệu lịch sử năm 2025 vs. năm 2026 | Q1, Q6 |
+| `year_quarter` | `string` | `receive_year + 'Q' + original_receive_date_dt.dt.quarter` (vd `2025Q1`) | Định danh quý dạng chuẩn hóa theo ngày nhận báo cáo | Q1, Q6 |
+| `original_receive_date_dt`, `onset_date_dt` | `datetime64[ns]` | `pd.to_datetime(col, format='%Y%m%d', errors='coerce')` (ngày thiếu tháng/ngày như `YYYY` chuyển thành `NaT`) | Biến thời gian chuẩn phục vụ tính độ trễ và chuỗi thời gian | Q1, Q6 |
+| `first_exposure_date_dt`, `last_exposure_date_dt` | `datetime64[ns]` | Parse từ cột ngày phơi nhiễm dạng `YYYYMMDD` ở bảng `drugs` | Xác định khoảng thời gian phơi nhiễm thuốc | Q3, Q4 |
 | `age_years` | `float` | `age_min / factor` (Year: 1, Month: 12, Week: 52.18, Day: 365.25), áp dụng `AGE_PLAUSIBLE_MAX` | Chuẩn hóa toàn bộ tuổi vật nuôi về năm; cắt bỏ ngoại lai phi sinh học | Q2, Q6 |
 | `weight_kg` | `float` | `weight_min * factor` (Kg: 1, Lb: 0.453592, Oz: 0.02835, Gram: 0.001), áp dụng `WEIGHT_PLAUSIBLE_MAX` | Chuẩn hóa toàn bộ thể trọng về kilôgam; cắt bỏ ngoại lai do lỗi nhập | Q2, Q6 |
 | `life_stage` | `category` | Phân ngưỡng từ `age_years` theo loài: `Junior` (non), `Adult` (trưởng thành), `Senior` (già), `Unknown` | Phân tầng sinh lý để đánh giá nhóm dễ tổn thương | Q2 |
-| `gender_clean` | `category` | Gộp nhãn `gender` về 3 nhóm: `Male`, `Female`, `Unknown/Mixed` | Làm sạch nhãn không nhất quán | Q2 |
-| `num_drugs` | `int` | Đếm số dòng trong `drugs.csv` tương ứng với mỗi `unique_aer_id_number` | Đo lường mức độ đa trị liệu (**Polypharmacy** khi `num_drugs >= 2`) | Q2, Q4, Q6 |
-| `has_off_label_use` | `int (0/1)` | Cờ nhị phân: $= 1$ nếu báo cáo có bất kỳ thuốc nào dùng sai nhãn (`off_label_use` notna hoặc `used_according_to_label == 'false'`) | Đánh giá nguy cơ dùng thuốc sai nhãn ở cấp báo cáo | Q4, Q6 |
-| `used_according_to_label` | `category` | Nhãn trạng thái dùng đúng nhãn chủ đạo của báo cáo (`true`, `false`, `Unknown`) | Đặc trưng đầu vào cho mô hình phân loại | Q4, Q6 |
+| `gender_clean` | `category` | Gộp nhãn `gender` về 3 nhóm: `Male`, `Female`, `Unknown/Mixed` (cột `gender` gốc giữ nguyên `NaN` để bảo toàn raw) | Làm sạch nhãn không nhất quán | Q2 |
+| `num_drugs` | `Int64` | Đếm số dòng trong `drugs.csv` tương ứng với mỗi `unique_aer_id_number` | Đo lường mức độ đa trị liệu (**Polypharmacy** khi `num_drugs >= 2`) | Q2, Q4, Q6 |
+| `has_off_label_use` | `Int64 (0/1)` | Cờ nhị phân: $= 1$ nếu báo cáo có bất kỳ thuốc nào dùng sai nhãn (`off_label_use` notna hoặc `used_according_to_label == 'false'`) | Đánh giá nguy cơ dùng thuốc sai nhãn ở cấp báo cáo | Q4, Q6 |
+| `used_according_to_label` | `category` | Nhãn trạng thái dùng đúng nhãn (`true`, `false`, `Missing/Unknown`) | Đặc trưng đầu vào cho phân tích sai nhãn và mô hình phân loại | Q4, Q6 |
 | `reporting_delay_days` | `float` | `(original_receive_date_dt - onset_date_dt).dt.days`, lọc trong khoảng $[0, 3650]$ ngày | Đo lường độ trễ gửi báo cáo về FDA; chỉ báo hành vi giám sát | Q1, Q6 |
-| `receive_month` | `int` | `original_receive_date_dt.dt.month` ($1 \rightarrow 12$) | Khảo sát xu hướng mùa vụ trong năm và biến đầu vào cho ML | Q1, Q6 |
-| `receive_week_in_q` | `int` | `((receive_dt - quarter_start).dt.days // 7 + 1)` ($1 \rightarrow 13$) | Khảo sát tổng lượng báo cáo theo tuần trong quý để đối chiếu YoY | Q1, Q6 |
+| `receive_month` | `Int64` | `original_receive_date_dt.dt.month` ($1 \rightarrow 12$) | Khảo sát xu hướng mùa vụ trong năm và biến đầu vào cho ML | Q1, Q6 |
+| `receive_week_in_q` | `Int64` | `((receive_dt - quarter_start).dt.days // 7 + 1)` ($1 \rightarrow 14$, quý 92 ngày có ngày lẻ ở tuần 14) | Khảo sát tổng lượng báo cáo theo tuần trong quý để đối chiếu YoY | Q1, Q6 |
 | `species_group` | `category` | Ánh xạ `species` thành 3 nhóm lớn: `Dog` (Chó), `Cat` (Mèo), và `Other` (Các loài khác) | Phân tầng báo cáo để xác định Top thuật ngữ VeDDRA đặc trưng | Q1 |
-| `attack_rate` (hoặc `affected_ratio`) | `float` | `number_of_animals_affected / number_of_animals_treated` ở báo cáo đàn gia súc | Tỷ lệ động vật bị ảnh hưởng trong đàn được điều trị | Q5 |
+| `attack_rate` (hoặc `affected_ratio`) | `float` | `number_of_animals_affected / number_of_animals_treated` ở báo cáo đàn gia súc (`treated > 0`) | Tỷ lệ động vật bị ảnh hưởng trong đàn được điều trị | Q5 |
+| `attack_rate_gt_1` | `bool` | Cờ `attack_rate > 1.0` (giữ nguyên ca bất thường để chạy phân tích độ nhạy) | Phục vụ kiểm định độ vững **D6** (loại vs. giữ ca `attack_rate > 1`) | Q5 |
+| `active_ingredients_clean` | `string` | Ở `drugs.csv` sạch: loại khoảng trắng thừa và chuyển placeholder (`Noinformationsupplied`, `Unknown`, `Unknown Medication`) thành `NaN` | Tách bạch thiếu ẩn khỏi tên hoạt chất thực khi tính ROR | Q3 |
+| `is_outcome_known` | `bool` | Ở `outcomes.csv` sạch: `True` nếu `medical_status != 'Outcome Unknown'` | Tách minh bạch nhóm biết/không biết kết cục lâm sàng | Q4 |
 | `route_primary` | `category` | Đường dùng thuốc đầu tiên / chính trong báo cáo (`Oral`, `Topical`, `Subcutaneous`, ...) | Đặc trưng dược lý quan trọng thứ 2 trong mô hình triage | Q3, Q5, Q6 |
 | `dosage_form_primary` | `category` | Dạng bào chế đầu tiên / chính của thuốc trong báo cáo | Đặc trưng phương thức đưa thuốc | Q6 |
 | `top_active_ingredients` | `category` | Chuỗi hoạt chất chính của thuốc trong báo cáo; mã hóa OHE giới hạn Top 50 | Đặc trưng quan trọng nhất trong mô hình phân loại rủi ro Q6 | Q3, Q6 |
