@@ -107,8 +107,19 @@ HERD_SPECIES = ("Cattle", "Pig", "Chicken", "Goat", "Sheep", "Turkey")
 # Chuỗi thiếu ẩn (implicit placeholders) phát hiện trong EDA Mục 2.4
 PLACEHOLDER_RE = re.compile(
     r"^(?:unknown|outcome unknown|unknown medication|msk|not given|not provided|"
-    r"requested,?\s*unknown|no\s*information\s*supplied|none|n/a|na|null|<na>|\s*)$",
+    r"requested,?\s*unknown|no\s*information\s*supplied|none|n/a|na|null|<na>|\s*|"
+    r".*\(\s*unknown\s*\))$",
     flags=re.IGNORECASE,
+)
+
+# Danh sách các cột nhãn boolean cần chuẩn hóa thống nhất về ('true', 'false', missing_label)
+REPORT_BOOL_COLS = ("serious_ae", "treated_for_ae", "is_crossbred")
+DRUG_BOOL_COLS = (
+    "used_according_to_label",
+    "previous_exposure_to_drug",
+    "previous_ae_to_drug",
+    "ae_abated_after_stopping_drug",
+    "ae_reappeared_after_resuming_drug",
 )
 
 # Cột bị che hoàn toàn ('MSK') hoặc định danh lô nhiễu cần loại khỏi bảng drugs sạch
@@ -144,7 +155,7 @@ def _strip_string_columns(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _normalize_placeholder_to_nan(series: pd.Series) -> pd.Series:
-    """Chuyển các chuỗi thiếu ẩn (Unknown, MSK, Noinformationsupplied, ...) thành NaN."""
+    """Chuyển các chuỗi thiếu ẩn (Unknown, MSK, Noinformationsupplied, *(Unknown)...) thành NaN."""
     def _clean(val):
         if pd.isna(val):
             return np.nan
@@ -154,6 +165,23 @@ def _normalize_placeholder_to_nan(series: pd.Series) -> pd.Series:
         return s
 
     return series.map(_clean)
+
+
+def _normalize_boolean_series(
+    series: pd.Series,
+    missing_label: str = "Unknown",
+) -> pd.Series:
+    """
+    Chuẩn hóa thống nhất các cột nhãn boolean về ('true', 'false', missing_label).
+    Mọi giá trị khuyết (NaN), placeholder hoặc chuỗi danh sách không hợp lệ
+    (như "['true', 'false']" ở is_crossbred) đều được gán về `missing_label`.
+    """
+    norm = series.astype(str).str.strip().str.lower()
+    return pd.Series(
+        np.where(norm.isin(["true", "false"]), norm, missing_label),
+        index=series.index,
+        dtype="object",
+    )
 
 
 def _map_species_group(species: pd.Series) -> pd.Series:
@@ -361,14 +389,28 @@ def clean_reports(
         stats["weight_outliers_nullified"] = int(df["weight_kg_raw"].notna().sum() - df["weight_kg"].notna().sum())
         df = df.drop(columns=["weight_kg_raw"])
 
-    # 5. Chuẩn hóa biến phân loại & số nguyên
+    # 5. Chuẩn hóa biến phân loại, boolean & số nguyên
     df["species"] = df["species"].fillna("Unknown")
     df["species_group"] = _map_species_group(df["species"])
     df["gender_clean"] = df["gender"].where(df["gender"].isin(["Male", "Female"]), "Unknown/Mixed")
 
-    for col in ("primary_reporter", "reproductive_status", "type_of_information", "health_prior_condition"):
+    for col in (
+        "primary_reporter",
+        "reproductive_status",
+        "type_of_information",
+        "health_prior_condition",
+        "female_physio_status",
+    ):
         if col in df.columns:
             df[col] = df[col].fillna("Unknown")
+    if "female_physio_status" in df.columns:
+        df["female_physio_status"] = df["female_physio_status"].str.replace(
+            r"(?i)^not applicable$", "Not applicable", regex=True
+        )
+
+    for col in REPORT_BOOL_COLS:
+        if col in df.columns:
+            df[col] = _normalize_boolean_series(df[col], missing_label="Unknown")
 
     for col in ("number_of_animals_affected", "number_of_animals_treated"):
         if col in df.columns:
@@ -380,10 +422,7 @@ def clean_reports(
     if "serious_ae" in df.columns:
         df["serious"] = (
             df["serious_ae"]
-            .astype(str)
-            .str.strip()
-            .str.lower()
-            .map({"true": 1, "false": 0, "1": 1, "0": 0})
+            .map({"true": 1, "false": 0})
             .astype("Int64")
         )
 
@@ -442,19 +481,16 @@ def clean_drugs(
     # 3. Parse ngày phơi nhiễm thuốc
     df = parse_fda_dates(df, date_cols=("first_exposure_date", "last_exposure_date"))
 
-    # 4. Chuẩn hóa danh mục & thiếu ẩn
+    # 4. Chuẩn hóa danh mục, boolean & thiếu ẩn
     for col in ("route", "administered_by", "dosage_form", "atc_vet_code"):
         if col in df.columns:
             cleaned = _normalize_placeholder_to_nan(df[col])
             df[col] = cleaned.fillna("Unknown")
 
-    if "used_according_to_label" in df.columns:
-        lbl = df["used_according_to_label"].astype(str).str.strip().str.lower()
-        df["used_according_to_label"] = np.where(
-            lbl.isin(["true", "false"]),
-            lbl,
-            "Missing/Unknown",
-        )
+    for col in DRUG_BOOL_COLS:
+        if col in df.columns:
+            missing_lbl = "Missing/Unknown" if col == "used_according_to_label" else "Unknown"
+            df[col] = _normalize_boolean_series(df[col], missing_label=missing_lbl)
 
     if "active_ingredients" in df.columns:
         ai_clean = _normalize_placeholder_to_nan(df["active_ingredients"])
@@ -480,7 +516,7 @@ def clean_reactions(
     """
     Làm sạch bảng `reactions`:
     1. Đồng bộ khóa ngoại với `reports_clean`.
-    2. Loại bỏ các dòng trùng lặp hoàn toàn (579 dòng phát hiện ở EDA Mục 2.1.4).
+    2. Loại bỏ các dòng trùng lặp hoàn toàn (579 dòng trên dữ liệu thô ở EDA Mục 2.1.4; sau cascade còn 570 dòng bị loại ở bước này).
     3. Khử trùng lặp theo cặp `(unique_aer_id_number, veddra_term_code)`, giữ bản ghi đầy đủ thông tin nhất.
     4. Chuẩn hóa `accuracy` (`NaN -> 'Unknown'`) và ép kiểu `number_of_animals_affected` (`Int64`).
     """
@@ -666,6 +702,9 @@ _CLEAN_DTYPES: Dict[str, Dict[str, str]] = {
         "quarter": "string",
         "source_file": "string",
         "year_quarter": "string",
+        "serious_ae": "string",
+        "treated_for_ae": "string",
+        "is_crossbred": "string",
         "receive_year": "Int64",
         "receive_month": "Int64",
         "receive_week_in_q": "Int64",
@@ -685,6 +724,11 @@ _CLEAN_DTYPES: Dict[str, Dict[str, str]] = {
         "atc_vet_code": "string",
         "quarter": "string",
         "source_file": "string",
+        "used_according_to_label": "string",
+        "previous_exposure_to_drug": "string",
+        "previous_ae_to_drug": "string",
+        "ae_abated_after_stopping_drug": "string",
+        "ae_reappeared_after_resuming_drug": "string",
         "drug_idx": "Int64",
     },
     "reactions": {

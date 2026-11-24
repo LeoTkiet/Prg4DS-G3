@@ -161,7 +161,7 @@ Các biến mới được tạo ra trong quá trình Tiền xử lý (Mục 3.2
 | `species_group` | `category` | Ánh xạ `species` thành 3 nhóm lớn: `Dog` (Chó), `Cat` (Mèo), và `Other` (Các loài khác) | Phân tầng báo cáo để xác định Top thuật ngữ VeDDRA đặc trưng | Q1 |
 | `attack_rate` (hoặc `affected_ratio`) | `float` | `number_of_animals_affected / number_of_animals_treated` ở báo cáo đàn gia súc (`treated > 0`) | Tỷ lệ động vật bị ảnh hưởng trong đàn được điều trị | Q5 |
 | `attack_rate_gt_1` | `bool` | Cờ `attack_rate > 1.0` (giữ nguyên ca bất thường để chạy phân tích độ nhạy) | Phục vụ kiểm định độ vững **D6** (loại vs. giữ ca `attack_rate > 1`) | Q5 |
-| `active_ingredients_clean` | `string` | Ở `drugs.csv` sạch: loại khoảng trắng thừa và chuyển placeholder (`Noinformationsupplied`, `Unknown`, `Unknown Medication`) thành `NaN` | Tách bạch thiếu ẩn khỏi tên hoạt chất thực khi tính ROR | Q3 |
+| `active_ingredients_clean` | `string` | Ở `drugs.csv` sạch: loại khoảng trắng thừa và chuyển placeholder (`Noinformationsupplied`, `Unknown`, `Unknown Medication`, `*(Unknown)` như `Anesthetic (Unknown)`, `Antibiotic (Unknown)`...) thành `NaN` | Tách bạch thiếu ẩn khỏi tên hoạt chất thực khi tính ROR | Q3 |
 | `is_outcome_known` | `bool` | Ở `outcomes.csv` sạch: `True` nếu `medical_status != 'Outcome Unknown'` | Tách minh bạch nhóm biết/không biết kết cục lâm sàng | Q4 |
 | `route_primary` | `category` | Đường dùng thuốc đầu tiên / chính trong báo cáo (`Oral`, `Topical`, `Subcutaneous`, ...) | Đặc trưng dược lý quan trọng thứ 2 trong mô hình triage | Q3, Q5, Q6 |
 | `dosage_form_primary` | `category` | Dạng bào chế đầu tiên / chính của thuốc trong báo cáo | Đặc trưng phương thức đưa thuốc | Q6 |
