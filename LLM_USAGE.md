@@ -70,7 +70,7 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
 
 ---
 
-### Lần 5 — Phản biện Q1/Q6 và xây dựng EDA chuyên sâu Task T08 (NB02, NB03) (2026-11-16)
+### Lần 7 — Phản biện Q1/Q6 và xây dựng EDA chuyên sâu Task T08 (NB02, NB03) (2026-11-16)
 - **Thành viên:** Đinh Công Khang (24120332) — với hỗ trợ từ AI coding agent.
 - **Công cụ:** OpenCode (model: opencode/big-pickle).
 - **Đã hỏi gì:** Nhận xét/phản biện hệ thống 6 câu hỏi nghiên cứu trong `README.md` (trọng tâm Q1, Q6); xây dựng các cell phân tích EDA chuyên sâu cho Task T08 trong `notebooks/02_analysis.ipynb` (Q1) và `notebooks/03_ml_question.ipynb` (Q6); sửa `FutureWarning` groupby/pivot Categorical, định dạng bảng bằng `display()`, và xử lý hiển thị `veddra_term_name` quá dài.
@@ -78,6 +78,22 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
   - Đã rà soát nội dung phản biện (phạm vi, thiên lệch dữ liệu tự nguyện, giới hạn suy luận mùa vụ/nhân quả, leakage & drift cho Q6) và điều chỉnh cho phù hợp với rubric/đề tài trước khi áp dụng.
   - Các cell notebook do AI gợi ý/sinh (load & join `reports`↔`reactions`/`drugs`, `log_row_count_change`, tỷ trọng theo loài×quý, bootstrap CI, χ²/Cramér’s V, EDA nhãn `serious_ae`, tín hiệu sinh học/bối cảnh, so sánh train 2025Q1–Q4 vs test 2026Q1) cần được **chạy lại trên dữ liệu thực tế**, kiểm chứng số liệu/biểu đồ, đơn vị quan sát và giả định thống kê; tuyệt đối không dùng `outcome`/`treated_for_ae`/`duration` làm đặc trưng dự báo Q6.
   - Các chỉnh sửa trình bày (`display/style`, `observed=True`, rút gọn nhãn VeDDRA khi hiển thị nhưng giữ giá trị gốc cho phân tích) đã được áp dụng vào notebook và cần được kiểm tra trực quan/khả năng tái lập (Restart Kernel & Run All) trước khi commit.
+
+### Lần 8 — Khắc phục lỗi phản biện tiền xử lý Q1/Q6, tối ưu hóa pipeline ML NB03 và đồng bộ toàn diện Data Dictionary v2 & README (2026-11-23)
+- **Thành viên:** Đinh Công Khang (`24120332`)
+- **Công cụ:** Google Antigravity (Gemini 2.5 Pro)
+- **Đã hỏi gì:**
+  - Hỗ trợ gỡ lỗi và giải quyết các phản biện của reviewer (LeoTkiet) trên nhánh `feat/khang-preprocessing` về phần tiền xử lý cho 2 câu hỏi Q1 và Q6:
+    - Trong `notebooks/01_collection_exploration.ipynb`: Khắc phục cảnh báo `SettingWithCopyWarning` tại Cell 27 bằng `.copy()` và bổ sung nhãn trục Y; chuẩn hóa logic nhận diện thiếu ẩn tại Cell 41 bằng regex `_PLACEHOLDER_PAT`; thay thế phương thức `.join()` bằng `pd.merge()` tại Cell 48 để loại bỏ cảnh báo `Pandas4Warning`.
+    - Trong `notebooks/03_ml_question.ipynb`: Bổ sung import `clone` từ `sklearn.base`; bổ sung bộ lọc cá thể người (`species != 'Human'`), ngưỡng giới hạn sinh học hợp lý (`age_years <= 35`, `weight_kg <= 1200`), ép kiểu số và gắn nhãn `has_off_label_use`; giải quyết dứt điểm lỗi cạn kiệt bộ nhớ (OOM) và lỗi ma trận thưa không tương thích với `HistGradientBoostingClassifier` bằng cấu hình `OneHotEncoder(sparse_output=False, max_categories=50)`; xử lý lỗi không tương thích giữa `cross_val_predict` và `TimeSeriesSplit` bằng cách lập trình vòng lặp thủ công tạo Out-of-Fold (OOF) predictions trên tập huấn luyện 2025; cập nhật các số liệu định lượng thực nghiệm chính xác vào markdown kết quả.
+  - Tự đánh giá và hoàn thiện tiêu chuẩn tiền xử lý theo rubric đồ án cho hai câu hỏi Q1 (tiêu chí D1, D2, D5) và Q6 (đầy đủ 6 tiêu chuẩn ML: Leakage prevention, Time-based split, Pipeline & Models comparison, Cross-validation OOF, Error Analysis, Permutation Importance).
+  - Cập nhật và đồng bộ hóa tài liệu dự án:
+    - Nâng cấp [data/data_dictionary.md](data/data_dictionary.md) lên phiên bản **v2**: Thống kê đầy đủ 77 cột dữ liệu gốc qua 5 quý (94.412 báo cáo, 174.123 thuốc, 270.244 phản ứng, 85.143 kết cục), bổ sung các cột còn thiếu (`foreign_or_domestic`, `time_between_exposure_and_onset`, 10 cột đặc trưng thuốc trong `drugs.csv`), ghi nhận tỷ lệ khuyết thiếu ẩn ở `outcomes.csv` (30.56% 'Outcome Unknown'), lập bảng 21 biến dẫn xuất chuẩn hóa và danh sách loại trừ biến hậu nghiệm chống rò rỉ dữ liệu ML.
+    - Cập nhật [README.md](README.md): Cập nhật Mục 2.4 (quy mô 77 cột, 4 bảng CSV và link dictionary v2), Mục 3 (kiến trúc module phân tách các sub-notebooks `02a`, `02b`, `02c`), Mục 5 (đánh dấu hoàn thành Giai đoạn 1, 2 và thực nghiệm Giai đoạn 4), Mục 6 (thay thế số liệu sơ bộ mẫu 14.826 dòng bằng các phát hiện định lượng thực tế toàn diện từ 94.412 báo cáo EDA và kết quả mô hình ML Q6: PR-AUC 0.7901, ROC-AUC 0.8384, Recall 82.23% tại ngưỡng OOF 0.365), Mục 7.4 (hướng dẫn thực thi tuần tự các notebook).
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - Tự thực thi chạy lại toàn bộ notebook 01, notebook 02 và notebook 03 ("Restart Kernel and Run All"), xác nhận 100% cell hoàn tất không lỗi và lưu trữ đầy đủ output/biểu đồ.
+  - Rà soát cẩn trọng pipeline tiền xử lý và tham số mô hình (`OneHotEncoder`, `HistGradientBoostingClassifier`, `TimeSeriesSplit`) để đảm bảo không rò rỉ dữ liệu (Data Leakage) và cố định seed `random_state=42` đảm bảo tính tái lập (Reproducibility).
+  - Toàn bộ số liệu và thông tin cập nhật trong `data_dictionary.md` và `README.md` được đối chiếu chéo với schema thực tế từ `src/data_loader.py` và bảng kết quả chạy thực nghiệm trước khi ghi nhận.
 
 ---
 
