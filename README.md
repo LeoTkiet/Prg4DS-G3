@@ -140,11 +140,13 @@ Prg4DS-G3/
 │   └── visualization.py                   # Thiết lập style biểu đồ thống nhất cho cả nhóm
 ├── notebooks/
 │   ├── 01_collection_exploration.ipynb    # Mục 3.1 & 3.2: Thu thập 5 quý (94.412 báo cáo), EDA & Tiền xử lý dữ liệu lõi
-│   ├── 02_analysis.ipynb                  # Mục 3.3 & 3.4: Master Hub tổng hợp 5 câu hỏi Non-ML (Q1 - Q5)
-│   │   ├── 02a_analysis_khang.ipynb       # Phân tích sâu Q1 (Species adverse reactions & Seasonal trend) [Đang phát triển]
-│   │   ├── 02b_analysis_nhi.ipynb         # Phân tích sâu Q2 (Biometrics & Severity) & Q5 (Livestock attack rate)
-│   │   └── 02c_analysis_kiet.ipynb        # Phân tích sâu Q3 (ROR Safety vs. Efficacy) & Q4 (Off-label & Polypharmacy)
-│   └── 03_ml_question.ipynb               # Mục 3.3, 3.4 & 3.5: Mô hình Học máy Q6 (Triage phân loại serious_ae 2025 -> 2026) & Tổng kết/Reflection
+│   ├── 02_analysis.ipynb                  # Master Hub: Mục 3.3 Question Formulation, ma trận tiêu chí D1-D6 và link dẫn sang Q1-Q5
+│   ├── 02_q1_analysis.ipynb               # Q1: Phản ứng VeDDRA & Xu hướng theo quý (Khang)
+│   ├── 02_q2_analysis.ipynb               # Q2: Đặc điểm sinh học & Biến cố nghiêm trọng (Nhi)
+│   ├── 02_q3_analysis.ipynb               # Q3: Tỷ suất đồng xuất hiện ROR Hoạt chất x Triệu chứng (Kiệt)
+│   ├── 02_q4_analysis.ipynb               # Q4: Dùng thuốc sai nhãn Off-label & Kết cục y khoa (Kiệt)
+│   ├── 02_q5_analysis.ipynb               # Q5: Dịch tễ đàn & Tỷ lệ ảnh hưởng ở đàn (Nhi)
+│   └── 03_ml_question.ipynb               # Q6 Học máy & Mục 3.5 Summary & Reflection
 └── slides.pdf                             # Slide thuyết trình cuối kỳ (sẽ cập nhật khi hoàn tất thực nghiệm)
 ```
 
@@ -215,11 +217,13 @@ flowchart LR
 ### Giai đoạn 3: Phân tích 5 Câu hỏi Non-ML (`02_analysis.ipynb`)
 - **Mục tiêu:** Mỗi thành viên triển khai các câu hỏi mình sở hữu theo đúng cấu trúc Mục 3.4: *(1) Mô tả tiền xử lý bằng Markdown + in số dòng trước/sau mỗi bước lọc/gộp $\rightarrow$ (2) Giải thích phương pháp & tiêu chí D1–D6 $\rightarrow$ (3) Ít nhất 2 biểu đồ chuẩn chỉnh + trả lời bằng số liệu cụ thể & nêu hạn chế*.
 - **Phân công thực hiện & Phân tách module:**
-  - Để tránh xung đột git khi 3 thành viên cùng commit song song vào một notebook lớn, nhóm áp dụng kiến trúc module:
-    - `notebooks/02_analysis.ipynb`: Master Hub tích hợp, dẫn nhập và kết luận chung.
-    - `notebooks/02a_analysis_khang.ipynb`: Q1 (Khang phụ trách — Đặc trưng phản ứng theo loài & Xu hướng theo quý).
-    - `notebooks/02b_analysis_nhi.ipynb`: Q2 (Đặc điểm sinh học & Nguy cơ) và Q5 (Attack Rate ở vật nuôi đàn) (Nhi phụ trách).
-    - `notebooks/02c_analysis_kiet.ipynb`: Q3 (ROR Hoạt chất – Phản ứng) và Q4 (Off-label & Polypharmacy) (Kiệt phụ trách).
+  - Để tránh xung đột git khi 3 thành viên cùng commit song song vào một notebook lớn, nhóm áp dụng kiến trúc phân rã theo từng câu hỏi:
+    - `notebooks/02_analysis.ipynb`: Master Hub tích hợp, dẫn nhập Mục 3.3, ma trận D1–D6 và kết luận chung.
+    - `notebooks/02_q1_analysis.ipynb`: Q1 (Khang phụ trách — Phản ứng VeDDRA & Xu hướng theo quý).
+    - `notebooks/02_q2_analysis.ipynb`: Q2 (Nhi phụ trách — Đặc điểm sinh học & Biến cố nghiêm trọng).
+    - `notebooks/02_q3_analysis.ipynb`: Q3 (Kiệt phụ trách — Tỷ suất đồng xuất hiện ROR Hoạt chất x Triệu chứng).
+    - `notebooks/02_q4_analysis.ipynb`: Q4 (Kiệt phụ trách — Dùng thuốc sai nhãn Off-label & Kết cục y khoa).
+    - `notebooks/02_q5_analysis.ipynb`: Q5 (Nhi phụ trách — Dịch tễ đàn & Tỷ lệ ảnh hưởng ở đàn).
   - Phản biện chéo: Q1 do Kiệt review; Q2 & Q5 do Khang review; Q3 & Q4 do Nhi review.
 
 ### Giai đoạn 4: Xây dựng & Kiểm thử Mô hình Học máy trên năm 2026 (`03_ml_question.ipynb`)
@@ -355,10 +359,12 @@ jupyter lab
 
 Mở và chạy (**Restart Kernel and Run All**) lần lượt theo thứ tự:
 1. [`notebooks/01_collection_exploration.ipynb`](notebooks/01_collection_exploration.ipynb) — Đọc dữ liệu thô từ `data/raw/`, khám phá schema, xử lý làm sạch cơ bản, chuẩn hóa sinh trắc học và xuất 4 bảng phẳng vào `data/processed/`.
-2. [`notebooks/02_analysis.ipynb`](notebooks/02_analysis.ipynb) (Master Hub) hoặc các notebook phân tích chuyên sâu theo từng nhóm câu hỏi:
-   - [`notebooks/02a_analysis_khang.ipynb`](notebooks/02a_analysis_khang.ipynb): Phân tích sâu **Q1** (Phản ứng theo loài & Xu hướng theo quý).
-   - [`notebooks/02b_analysis_nhi.ipynb`](notebooks/02b_analysis_nhi.ipynb): Phân tích sâu **Q2** (Đặc điểm sinh học) và **Q5** (Tỷ lệ ảnh hưởng ở vật nuôi đàn).
-   - [`notebooks/02c_analysis_kiet.ipynb`](notebooks/02c_analysis_kiet.ipynb): Phân tích sâu **Q3** (ROR Hoạt chất – Phản ứng) và **Q4** (Off-label & Polypharmacy).
+2. [`notebooks/02_analysis.ipynb`](notebooks/02_analysis.ipynb) (Master Hub) hoặc các notebook phân tích chuyên sâu theo từng câu hỏi:
+   - [`notebooks/02_q1_analysis.ipynb`](notebooks/02_q1_analysis.ipynb): Phân tích sâu **Q1** (Phản ứng VeDDRA & Xu hướng theo quý).
+   - [`notebooks/02_q2_analysis.ipynb`](notebooks/02_q2_analysis.ipynb): Phân tích sâu **Q2** (Đặc điểm sinh học & Biến cố nghiêm trọng).
+   - [`notebooks/02_q3_analysis.ipynb`](notebooks/02_q3_analysis.ipynb): Phân tích sâu **Q3** (Tỷ suất đồng xuất hiện ROR Hoạt chất x Triệu chứng).
+   - [`notebooks/02_q4_analysis.ipynb`](notebooks/02_q4_analysis.ipynb): Phân tích sâu **Q4** (Dùng thuốc sai nhãn Off-label & Kết cục y khoa).
+   - [`notebooks/02_q5_analysis.ipynb`](notebooks/02_q5_analysis.ipynb): Phân tích sâu **Q5** (Dịch tễ đàn & Tỷ lệ ảnh hưởng ở đàn).
 3. [`notebooks/03_ml_question.ipynb`](notebooks/03_ml_question.ipynb) — Huấn luyện mô hình học máy trên giai đoạn **2025 Q1–Q4**, dự đoán và đánh giá độ chính xác trên tập kiểm thử ngoài thời gian **2026 (Q1)** (**Q6**), phân tích lỗi, giải thích mô hình bằng Permutation Importance và tổng kết đồ án.
 
 ### 7.5. Troubleshooting thường gặp
