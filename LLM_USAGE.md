@@ -95,6 +95,18 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
   - Rà soát cẩn trọng pipeline tiền xử lý và tham số mô hình (`OneHotEncoder`, `HistGradientBoostingClassifier`, `TimeSeriesSplit`) để đảm bảo không rò rỉ dữ liệu (Data Leakage) và cố định seed `random_state=42` đảm bảo tính tái lập (Reproducibility).
   - Toàn bộ số liệu và thông tin cập nhật trong `data_dictionary.md` và `README.md` được đối chiếu chéo với schema thực tế từ `src/data_loader.py` và bảng kết quả chạy thực nghiệm trước khi ghi nhận.
 
+### Lần 9 — Rà soát chuyên sâu và hiệu chỉnh Q1 theo phản biện nghiêm ngặt (2026-11-26)
+- **Thành viên:** Đinh Công Khang (`24120332`)
+- **Công cụ:** OpenCode (AI coding agent; model `opencode/big-pickle`)
+- **Đã hỏi gì:**
+  - Nhờ đóng vai reviewer Data Science cấp cao, chỉ báo cáo vấn đề thật trong `notebooks/02_q1_analysis.ipynb` theo định dạng: mức độ nghiêm trọng, dòng code, đầu vào/tình huống gây ra, và diff tối thiểu.
+  - Sau đó yêu cầu áp dụng các phát hiện đó; đồng thời khôi phục 2 cell code đầu về đúng template gốc với đường dẫn `data/processed/clean`, thêm dòng lựa chọn phương pháp trong Mục 2 và ghi nhận lần sử dụng AI vào `LLM_USAGE.md`.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - Không áp dụng ngay nhận xét: chạy lại notebook và kiểm chứng từng phát hiện trên dữ liệu thực (9.719 báo cáo `With no Adverse Events`, 58 bản ghi `Other` không rõ loài, mẫu số robustness của `Other` 9.809 → 1.796, v.v.) trước khi quyết định sửa.
+  - Áp dụng diff có biên tập: gộp bộ lọc vào cell tiền xử lý kèm log số dòng; thêm `n_all`/`n_no_defect` vào bảng robustness; đổi lệnh `display()` để liệt kê đủ Top 10; giữ nguyên chữ ký 12 cell, metadata và 2 cell code đầu của template.
+  - Phát hiện vấn đề phát sinh sau khi lọc (ô kỳ vọng χ² của `Other` chỉ 2,3) nên điều chỉnh còn 6 term cho riêng nhóm này, chạy lại toàn bộ 5 cell code và viết lại markdown kết quả theo số liệu output thực tế (`Lack of efficacy - NOS` 596/1.814 = 32,86%; χ² p = 0,133).
+  - Đối chiếu với `git show HEAD:notebooks/02_q1_analysis.ipynb` để xác nhận cấu trúc/metadata không đổi; chỉ ghi nhận vào nhật ký những nội dung đã kiểm chứng bằng thực thi và số liệu thực tế.
+
 ---
 
 ## Mẫu ghi nhận cho các phiên tiếp theo
