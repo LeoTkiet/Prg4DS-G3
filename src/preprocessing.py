@@ -625,7 +625,7 @@ def run_core_preprocessing(
     verbose: bool = True,
 ) -> Tuple[Dict[str, pd.DataFrame], Dict[str, int]]:
     """
-    Chạy trọn bộ pipeline tiền xử lý lõi (Task T14) cho cả 4 bảng:
+    Chạy trọn bộ pipeline tiền xử lý lõi cho cả 4 bảng:
     `reports`, `drugs`, `reactions`, `outcomes`.
     Trả về `(clean_tables, audit_stats)`.
     """
