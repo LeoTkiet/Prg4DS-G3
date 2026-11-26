@@ -97,6 +97,17 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
 
 ---
 
+### Lần 9 — Sửa và kiểm chứng pipeline ML Q6 trong NB03 bằng Build mode (2026-11-26)
+- **Thành viên:** Đinh Công Khang (`24120332`)
+- **Công cụ:** ChatGPT Codex (Build mode)
+- **Đã hỏi gì:** Áp dụng trực tiếp năm bản sửa từ phiên phản biện phần học máy Q6 trong `notebooks/03_ml_question.ipynb` và kiểm chứng kết quả trên dữ liệu hiện có.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - Codex trực tiếp sửa mã kiểm định cuốn chiếu theo quý trong năm 2025, tách tập chấm điểm toàn bộ báo cáo Q1/2026 khỏi nhóm có nhãn dùng để tính chỉ số và sửa cờ `has_off_label_use` để nhận trường hợp `used_according_to_label = false`.
+  - Codex trực tiếp sửa phần phân tích và các dòng in kết luận trong notebook. Các sửa đổi gồm dùng tỷ lệ dương trên tập test làm đường cơ sở AP, tính recall và chênh lệch tỷ lệ nhãn từ dữ liệu, thay câu kết luận cố định về xu hướng bằng đối chiếu dự báo cơ sở cùng kỳ theo tuần/tháng và báo cáo số gắn cờ triage riêng.
+  - Codex đối chiếu số lượng và sai số dự báo với CSV, chạy lại các cell huấn luyện và đánh giá bằng Python, rồi kiểm tra riêng hai dòng in AP và recall đã cập nhật. Lần chạy xác nhận 17.182 báo cáo được chấm điểm, trong đó 15.376 có nhãn dùng để đánh giá. Output cũ được xóa khỏi notebook.
+
+---
+
 ## Mẫu ghi nhận cho các phiên tiếp theo
 
 ```markdown
