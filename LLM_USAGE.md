@@ -97,6 +97,19 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
 
 ---
 
+### Lần 9 — Triển khai phân tích chuyên sâu Câu hỏi Q4 (Dùng thuốc sai nhãn Off-label, Đa trị liệu & Kết cục y khoa — Task T18) (2026-11-27)
+- **Thành viên:** Huỳnh Tuấn Kiệt (`24120356`)
+- **Công cụ:** Google Antigravity
+- **Đã hỏi gì:**
+  - Tham vấn xây dựng pipeline phân tích Câu hỏi Q4 trong `notebooks/02_q4_analysis.ipynb` đáp ứng 4 tiêu chí độ sâu **D1, D3, D4, D6**: tổng hợp trạng thái nhãn thuốc (`label_status`: `On-label Only`, `Off-label`, `Missing/Unknown`) và 7 nhóm hành vi sai nhãn cụ thể (`off_label_use`) từ bảng `drugs` cùng thứ bậc kết cục xấu nhất (`worst_outcome_rank`) từ bảng `outcomes` về cấp báo cáo 1:1.
+  - Hỗ trợ kiểm tra công thức phân tầng **Cochran–Mantel–Haenszel ($\text{aOR}_{\text{MH}}$)** qua $3 \times 3 = 9$ tầng (`species_group` $\times$ `reporter_group`), thuật toán **IRLS (Newton–Raphson)** cho Hồi quy Logistic Đa biến có số hạng tương tác ($\text{Off-label} \times \text{Polypharmacy}$), phương pháp tính phương sai tổ hợp tuyến tính $\mathbf{c}^T \mathbf{\Sigma} \mathbf{c}$ cho $\text{aOR}_{\text{joint}}$, thiết kế 9 kịch bản kiểm định độ vững **D6**, và căn chỉnh bố cục nhãn trên `Hình 4.1`, `Hình 4.2`, `Hình 4.3`.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - Tự thực thi và kiểm chứng số dòng qua 9 bước `log_row_count_change()` trên `76,630` báo cáo năm 2025 (`50,588` ca Complete-case biết `serious_ae`, `36,709` ca Complete-case biết kết cục lâm sàng) và tập kiểm chứng độc lập `2026 Q1`.
+  - Chuyển phép tính $p$-value Wald sang `2.0 * scipy.stats.norm.sf(abs(z))` để tránh hiện tượng tràn số dưới (underflow về `0.00e+00`) khi $|z|$ lớn, đồng thời bổ sung bảng phân rã 7 hành vi sai nhãn cụ thể (`Species Off-Label` có tỷ lệ tử vong/an tử cao nhất `25.09%`, gấp `3.28` lần chuẩn On-label `7.65%`; `Indication Off-Label` có tỷ lệ nghiêm trọng cao nhất `61.58%`) và phân tích cơ chế khuyết MNAR/MAR ở nhóm `Animal Owner` khuyết nhãn (tử vong `27.23%`).
+  - Tinh chỉnh tọa độ nhãn theo đỉnh thanh sai số `m_val + e_val + 0.8` ở `Hình 4.1`, tách hướng `xytext` các điểm sát nhau ở `Hình 4.2a` và mở rộng `ylim` ở `Hình 4.2b` & `Hình 4.3a` để hộp chú giải (Legend) không che khuất dữ liệu; cập nhật đồng bộ tóm tắt phát hiện Q4 vào Master Hub `02_analysis.ipynb`.
+
+---
+
 ## Mẫu ghi nhận cho các phiên tiếp theo
 
 ```markdown
