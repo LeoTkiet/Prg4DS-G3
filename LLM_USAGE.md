@@ -97,6 +97,19 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
 
 ---
 
+### Lần 9 — Triển khai phân tích chuyên sâu Câu hỏi Q3 (Tỷ suất đồng xuất hiện ROR Hoạt chất × Triệu chứng: Safety Issue vs. LOEE — Task T17) (2026-11-27)
+- **Thành viên:** Huỳnh Tuấn Kiệt (`24120356`)
+- **Công cụ:** Google Antigravity
+- **Đã hỏi gì:**
+  - Tham vấn thiết kế pipeline phân tích bất cân xứng cảnh giác dược cho Câu hỏi Q3 trong `notebooks/02_q3_analysis.ipynb` đáp ứng 4 tiêu chí độ sâu **D1, D2, D4, D5**: chuẩn hóa danh pháp hoạt chất đơn lẻ từ các chế phẩm phối hợp (`;`, `,`, `/`), khử trùng lặp cấp báo cáo `(unique_aer_id_number, ingredient)` và `(unique_aer_id_number, veddra_term_name)` để chống bùng nổ tổ hợp (Cartesian explosion), tính bảng liên hợp $2 \times 2$ cho ROR, PRR, khoảng tin cậy 95% Woolf (kèm hiệu chỉnh liên tục Haldane–Anscombe $+0.5$) và kiểm soát đa kiểm định bằng Benjamini–Hochberg FDR ($q_{\text{FDR}} < 0.01$).
+  - Hỗ trợ kiểm tra công thức ước lượng **Cochran–Mantel–Haenszel ($\text{ROR}_{\text{MH}}$)** và phương sai Robins–Breslow–Greenland phân tầng theo loài (`Dog` vs. `Cat`) khi có tầng rỗng ($a_k = 0$), đồng thời tinh chỉnh bố cục trục logarit và hộp chú giải (Legend) trên `Hình 3.1`, `Hình 3.2`, `Hình 3.3`.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - Tự chạy thực nghiệm trên tập dữ liệu sạch lõi T14 (`67,831` báo cáo lâm sàng năm 2025, `67,365` báo cáo khớp đồng thời hoạt chất và phản ứng VeDDRA — đạt `99.31%`), kiểm tra từng bước biến đổi bằng `log_row_count_change()`.
+  - Hiệu chỉnh hàm `compute_mantel_haenszel_species()` để tính tổng trọng số $R_k = a_k d_k / N_k$ và $S_k = b_k c_k / N_k$ trực tiếp trên số đếm nguyên gốc (không cộng $+0.5$ vào tầng có $a_k = 0$), giúp `Velagliflozin × Ketosis` ($a_{\text{Cat}} = 530, a_{\text{Dog}} = 0$) khớp chính xác $\text{ROR}_{\text{MH}} = \text{ROR}_{\text{Cat}} = 14.64$ (loại bỏ $-78.1\%$ độ phóng đại giả tạo do gộp mẫu số của Chó) và phát hiện nhiễu loài đảo chiều ở `Selamectin × LOEE - flea` ($\text{ROR}_{\text{MH}} = 1.77 < 2.0$).
+  - Căn chỉnh lại tỷ lệ trục logarit `xlim`/`ylim` ở `Hình 3.1` và ngắt dòng tiêu đề ở `Hình 3.3` để loại bỏ hoàn toàn hiện tượng đè chữ; đối chiếu toàn bộ số liệu thảo luận trong `02_q3_analysis.ipynb` và bản tóm tắt tại Master Hub `02_analysis.ipynb` khớp tuyệt đối với bảng output thực tế.
+
+---
+
 ## Mẫu ghi nhận cho các phiên tiếp theo
 
 ```markdown
