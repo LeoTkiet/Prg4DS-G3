@@ -140,7 +140,7 @@ Mỗi dòng tương ứng với một kết cục y khoa được ghi nhận cho
 
 ## 5. Danh mục Biến dẫn xuất chuẩn hóa (Derived Variables Dictionary)
 
-Các biến mới được tạo ra trong quá trình Tiền xử lý (Mục 3.2, 3.4) và Kỹ nghệ đặc trưng (Feature Engineering cho Học máy Q6) trong các notebook `01`, `02a`, `02b`, `02c`, `03`:
+Các biến mới được tạo ra trong quá trình Tiền xử lý (Mục 3.2, 3.4) và Kỹ nghệ đặc trưng (Feature Engineering cho Học máy Q6) trong các notebook `01`, `02`, `03`:
 
 | Biến dẫn xuất | Kiểu dữ liệu | Bảng gốc & Công thức quy đổi | Ý nghĩa lâm sàng & Mục đích sử dụng | Câu hỏi áp dụng |
 |---|:---:|---|---|:---:|
@@ -150,9 +150,12 @@ Các biến mới được tạo ra trong quá trình Tiền xử lý (Mục 3.2
 | `first_exposure_date_dt`, `last_exposure_date_dt` | `datetime64[ns]` | Parse từ cột ngày phơi nhiễm dạng `YYYYMMDD` ở bảng `drugs` | Xác định khoảng thời gian phơi nhiễm thuốc | Q3, Q4 |
 | `age_years` | `float` | `age_min / factor` (Year: 1, Month: 12, Week: 52.18, Day: 365.25), áp dụng `AGE_PLAUSIBLE_MAX` | Chuẩn hóa toàn bộ tuổi vật nuôi về năm; cắt bỏ ngoại lai phi sinh học | Q2, Q6 |
 | `weight_kg` | `float` | `weight_min * factor` (Kg: 1, Lb: 0.453592, Oz: 0.02835, Gram: 0.001), áp dụng `WEIGHT_PLAUSIBLE_MAX` | Chuẩn hóa toàn bộ thể trọng về kilôgam; cắt bỏ ngoại lai do lỗi nhập | Q2, Q6 |
+| `weight_tier` | `category` | Phân vị tứ phân vị (Quartiles Q1–Q4) tính riêng biệt theo từng loài (`Dog`, `Cat`) | Đánh giá xu hướng phi tuyến tính của thể trọng và nguy cơ biến cố nghiêm trọng | Q2 |
+| `weight_z_species` | `float` | Z-score chuẩn hóa cân nặng theo từng loài: `(weight_kg - mean) / std` | Biến liên tục chuẩn hóa phục vụ ước lượng hồi quy Logistic đa biến | Q2 |
 | `life_stage` | `category` | Phân ngưỡng từ `age_years` theo loài: `Junior` (non), `Adult` (trưởng thành), `Senior` (già), `Unknown` | Phân tầng sinh lý để đánh giá nhóm dễ tổn thương | Q2 |
 | `gender_clean` | `category` | Gộp nhãn `gender` về 3 nhóm: `Male`, `Female`, `Unknown/Mixed` (cột `gender` gốc giữ nguyên `NaN` để bảo toàn raw) | Làm sạch nhãn không nhất quán | Q2 |
 | `num_drugs` | `Int64` | Đếm số dòng trong `drugs.csv` tương ứng với mỗi `unique_aer_id_number` | Đo lường mức độ đa trị liệu (**Polypharmacy** khi `num_drugs >= 2`) | Q2, Q4, Q6 |
+| `polypharmacy_group` | `category` | Nhóm hóa số lượng thuốc sử dụng: `1 thuốc`, `2 thuốc`, `3+ thuốc` | Biến phân loại kiểm soát biến gây nhiễu cho kiểm định CMH và hồi quy đa biến | Q2, Q4 |
 | `has_off_label_use` | `Int64 (0/1)` | Cờ nhị phân: $= 1$ nếu báo cáo có bất kỳ thuốc nào dùng sai nhãn (`off_label_use` notna hoặc `used_according_to_label == 'false'`) | Đánh giá nguy cơ dùng thuốc sai nhãn ở cấp báo cáo | Q4, Q6 |
 | `used_according_to_label` | `category` | Nhãn trạng thái dùng đúng nhãn (`true`, `false`, `Missing/Unknown`) | Đặc trưng đầu vào cho phân tích sai nhãn và mô hình phân loại | Q4, Q6 |
 | `reporting_delay_days` | `float` | `(original_receive_date_dt - onset_date_dt).dt.days`, lọc trong khoảng $[0, 3650]$ ngày | Đo lường độ trễ gửi báo cáo về FDA; chỉ báo hành vi giám sát | Q1, Q6 |
@@ -161,6 +164,11 @@ Các biến mới được tạo ra trong quá trình Tiền xử lý (Mục 3.2
 | `species_group` | `category` | Ánh xạ `species` thành 3 nhóm lớn: `Dog` (Chó), `Cat` (Mèo), và `Other` (Các loài khác) | Phân tầng báo cáo để xác định Top thuật ngữ VeDDRA đặc trưng | Q1 |
 | `attack_rate` (hoặc `affected_ratio`) | `float` | `number_of_animals_affected / number_of_animals_treated` ở báo cáo đàn gia súc (`treated > 0`) | Tỷ lệ động vật bị ảnh hưởng trong đàn được điều trị | Q5 |
 | `attack_rate_gt_1` | `bool` | Cờ `attack_rate > 1.0` (giữ nguyên ca bất thường để chạy phân tích độ nhạy) | Phục vụ kiểm định độ vững **D6** (loại vs. giữ ca `attack_rate > 1`) | Q5 |
+| `treated_n` | `float` | Ép kiểu `number_of_animals_treated` sang số thực sau khi lọc `> 0` ở báo cáo đàn | Mẫu số và quy mô đàn trong tính toán Q5 | Q5 |
+| `affected_n` | `float` | Ép kiểu `number_of_animals_affected` sang số thực ở báo cáo đàn hợp lệ | Tử số tính `attack_rate` trong Q5 | Q5 |
+| `herd_size_group` | `category` | Phân vị 33%/67% của `treated_n`: `Nhỏ (< Q33)`, `Vừa (Q33-Q67)`, `Lớn (> Q67)` | Phân tích liên hệ giữa quy mô đàn và `attack_rate` | Q5 |
+| `route_grp` | `category` | Giữ 5 nhóm đường dùng thường gặp; gom nhãn khác thành `Other/Parenteral`, giữ `Unknown` riêng | So sánh `attack_rate` theo đường dùng thuốc | Q5 |
+| `species_grp` | `category` | Gộp `species == 'Cattle'` thành `Cattle`; các loài còn lại thành `Non-Cattle` | Kiểm soát phân tầng loài trong phân tích đường dùng Q5 | Q5 |
 | `active_ingredients_clean` | `string` | Ở `drugs.csv` sạch: loại khoảng trắng thừa và chuyển placeholder (`Noinformationsupplied`, `Unknown`, `Unknown Medication`, `*(Unknown)` như `Anesthetic (Unknown)`, `Antibiotic (Unknown)`...) thành `NaN` | Tách bạch thiếu ẩn khỏi tên hoạt chất thực khi tính ROR | Q3 |
 | `is_outcome_known` | `bool` | Ở `outcomes.csv` sạch: `True` nếu `medical_status != 'Outcome Unknown'` | Tách minh bạch nhóm biết/không biết kết cục lâm sàng | Q4 |
 | `route_primary` | `category` | Đường dùng thuốc đầu tiên / chính trong báo cáo (`Oral`, `Topical`, `Subcutaneous`, ...) | Đặc trưng dược lý quan trọng thứ 2 trong mô hình triage | Q3, Q5, Q6 |
