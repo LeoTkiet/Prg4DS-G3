@@ -95,9 +95,46 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
   - Rà soát cẩn trọng pipeline tiền xử lý và tham số mô hình (`OneHotEncoder`, `HistGradientBoostingClassifier`, `TimeSeriesSplit`) để đảm bảo không rò rỉ dữ liệu (Data Leakage) và cố định seed `random_state=42` đảm bảo tính tái lập (Reproducibility).
   - Toàn bộ số liệu và thông tin cập nhật trong `data_dictionary.md` và `README.md` được đối chiếu chéo với schema thực tế từ `src/data_loader.py` và bảng kết quả chạy thực nghiệm trước khi ghi nhận.
 
+### Lần 9 — Hỗ trợ kỹ thuật thống kê, thuật toán tối ưu và khung phân tích cho Câu hỏi Q2 (2026-11-27)
+- **Thành viên:** Trần Ngô Uyên Nhi (`24120210`)
+- **Công cụ:** Google Antigravity (Gemini)
+- **Đã hỏi gì:**
+  - Các phương pháp thống kê suy diễn nhằm đáp ứng tiêu chí độ sâu `D3–D6` theo rubric:
+    - Thuật toán IRLS (Iteratively Reweighted Least Squares) giải bài toán Hồi quy Logistic Đa biến trực tiếp bằng `numpy`/`scipy`, kèm tính toán ma trận hiệp phương sai tiệm cận Fisher Information để xuất sai số chuẩn Wald, 95% CI và p-value và một số thuật toán liên quan.
+    - Công thức và code mẫu tính kiểm định Cochran-Mantel-Haenszel (CMH pooled Odds Ratio) cùng phương sai Robins-Breslow-Greenland để kiểm soát biến gây nhiễu `polypharmacy_group` theo phân tầng loài.
+    - Vẽ biểu đồ Forest Plot trực quan hóa aOR và 4 kịch bản kiểm tra độ vững D6 (Robustness/Sensitivity checks) bằng `matplotlib`.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - **Sử dụng có chọn lọc & đối chiếu thuật toán:** Thành viên kiểm tra lại từng công thức toán học của IRLS và CMH do AI gợi ý, đối chiếu với lý thuyết thống kê để hiểu rõ cơ chế ước lượng trước khi đưa vào notebook; tự kiểm tra và chạy thử nghiệm các bước tiền xử lý với `log_row_count_change()` để kiểm soát số lượng dòng dữ liệu thực tế (58.634 ca Chó và 12.973 ca Mèo).
+  - **Tự thực hiện phân tích và viết biện giải độc lập:** đọc và phân tích bảng số liệu thực nghiệm (các giá trị aOR, p-value, tỷ lệ biến cố), từ đó tự biên soạn và chỉnh sửa toàn bộ phần diễn giải kết quả, ý nghĩa lâm sàng thú y, bàn luận về phát hiện bất ngờ và các hạn chế dữ liệu trong notebook [02_q2_analysis.ipynb](notebooks/02_q2_analysis.ipynb) theo văn phong và nhận định chuyên môn cá nhân.
+
 ---
 
-### Lần 9 — Triển khai phân tích chuyên sâu Câu hỏi Q4 (Dùng thuốc sai nhãn Off-label, Đa trị liệu & Kết cục y khoa — Task T18) (2026-11-27)
+### Lần 10 — Hoàn thiện phân tích Câu hỏi Q5 và đồng bộ phát hiện (2026-11-27)
+- **Thành viên:** Trần Ngô Uyên Nhi (24120210)
+- **Công cụ:** GitHub Copilot (Copilot SDK in VS Code)
+- **Đã hỏi gì:** Rà lỗi và chạy lại `notebooks/02_q5_analysis.ipynb`, thay phần ghi nhận placeholder bằng kết quả thực tế, bổ sung phát hiện Q5 vào notebook tổng hợp `02_analysis.ipynb`, cập nhật biến dẫn xuất mới vào `data/data_dictionary.md`.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - Chạy notebook bằng `nbconvert --execute` trên dữ liệu sạch thực tế và sửa tương thích Matplotlib (`tick_labels` thay cho `labels`) để hoàn tất biểu đồ.
+  - Xác nhận dữ liệu phân tích gồm 964 báo cáo đàn hợp lệ, trong đó có 801 báo cáo Cattle và 1 ca ngoại lai `attack_rate > 1` (`1.2857`).
+  - Ghi nhận các kết quả thực nghiệm và phân tích dựa trên đó.
+
+---
+
+### Lần 11 — Triển khai và hoàn thiện phản biện phân tích chuyên sâu Câu hỏi Q3 (Tỷ suất đồng xuất hiện ROR Hoạt chất × Triệu chứng: Safety Issue vs. LOEE — Task T17) (2026-11-27)
+- **Thành viên:** Huỳnh Tuấn Kiệt (`24120356`)
+- **Công cụ:** Google Antigravity
+- **Đã hỏi gì:**
+  - Tham vấn thiết kế pipeline phân tích bất cân xứng cảnh giác dược cho Câu hỏi Q3 trong `notebooks/02_q3_analysis.ipynb` đáp ứng 4 tiêu chí độ sâu **D1, D2, D4, D5**: chuẩn hóa danh pháp hoạt chất đơn lẻ từ các chế phẩm phối hợp (`;`, `,`, `/`), hợp nhất các bí danh viết tắt của thuốc nhỏ tai (`Gentamicin`, `Mometasone Furoate`, `Clotrimazole`, `Posaconazole`) và gộp mã thương mại vắc-xin Lyme USDA (`Recombitek Lyme - 2126.R0` cùng `Recombinant E. Coli BL21/ECL19`) về kháng nguyên chuẩn `Borrelia Burgdorferi Ospa (Recombinant E. Coli)`, khử trùng lặp cấp báo cáo `(unique_aer_id_number, ingredient)` và `(unique_aer_id_number, veddra_term_name)` để chống bùng nổ tổ hợp (Cartesian explosion).
+  - Cải tiến hàm `compute_disproportionality_table()` theo góp ý phản biện: loại bỏ cách lọc cứng theo tần suất thô (`top_exp_n`, `top_rea_n`), chuyển sang kiểm định bảng liên hợp $2 \times 2$ trên toàn bộ không gian giả thuyết $(E, R)$ thỏa ngưỡng cỡ mẫu tối thiểu ($n_{\text{exp}} \ge 50, n_{\text{rea}} \ge 50, a \ge 20$), áp dụng hiệu chỉnh đa kiểm định Benjamini–Hochberg FDR ($q_{\text{FDR}} < 0.05$) trên toàn bộ $M$ cặp kiểm định rồi mới trích Top 15 theo ROR; đồng thời tách riêng phân tích đường dùng (`route`, sau khi `.dropna(subset=["route"])` từ `drg_q3_valid`) thành hai bảng độc lập cho **Safety Issue** và **LOEE**.
+  - Hỗ trợ kiểm tra công thức ước lượng **Cochran–Mantel–Haenszel ($\text{ROR}_{\text{MH}}$)** và phương sai Robins–Breslow–Greenland phân tầng theo loài (`Dog` vs. `Cat`) khi có tầng rỗng ($a_k = 0$), đồng thời tinh chỉnh bố cục trục logarit và hộp chú giải (Legend) trên `Hình 3.1`, `Hình 3.2`, `Hình 3.3`.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - Tự chạy thực nghiệm trên tập dữ liệu sạch lõi T14 (`67,831` báo cáo lâm sàng năm 2025, `67,365` báo cáo khớp hoạt chất [`99.31%`] và `64,095` báo cáo khớp đường dùng [`94.49%`]), in rõ quy mô không gian kiểm định $M$ và số cặp đạt đồng thời $q_{\text{FDR}} < 0.05$ & $\text{CI}_{\text{low}} > 1.0$ ngay trước mỗi bảng Top 15 (`Safety Issue`: $M = 3,372 \rightarrow 1,996$ cặp đạt chuẩn; `LOEE`: $M = 203 \rightarrow 142$ cặp đạt chuẩn; `Route × Safety`: $M = 1,291 \rightarrow 592$ cặp; `Route × LOEE`: $M = 64 \rightarrow 31$ cặp).
+  - Hiệu chỉnh hàm `compute_mantel_haenszel_species()` để tính tổng trọng số $R_k = a_k d_k / N_k$ và $S_k = b_k c_k / N_k$ trực tiếp trên số đếm nguyên gốc (không cộng $+0.5$ vào tầng có $a_k = 0$), giúp `Velagliflozin × Ketosis` ($a_{\text{Cat}} = 530, a_{\text{Dog}} = 0$) khớp chính xác $\text{ROR}_{\text{MH}} = \text{ROR}_{\text{Cat}} = 14.64$ (loại bỏ $-78.1\%$ độ phóng đại giả tạo do gộp mẫu số của Chó) và phát hiện nhiễu loài đảo chiều ở `Selamectin × LOEE - flea` ($\text{ROR}_{\text{MH}} = 1.77 < 2.0$).
+  - Chuẩn hóa thuật ngữ diễn giải xuyên suốt phần thảo luận và kết luận: sử dụng chính xác thuật ngữ **tín hiệu báo cáo mất cân đối mạnh (*strong disproportionality signal*)** thay vì quy kết quan hệ nhân quả trực tiếp, phân biệt rõ nhóm kém hiệu quả thuốc (`LOEE`) với biến cố bất lợi lâm sàng thực sự (`Safety Issue`), và đồng bộ toàn bộ số liệu giữa `02_q3_analysis.ipynb` với Master Hub `02_analysis.ipynb`.
+
+---
+
+### Lần 12 — Triển khai phân tích chuyên sâu Câu hỏi Q4 (Dùng thuốc sai nhãn Off-label, Đa trị liệu & Kết cục y khoa — Task T18) (2026-11-27)
 - **Thành viên:** Huỳnh Tuấn Kiệt (`24120356`)
 - **Công cụ:** Google Antigravity
 - **Đã hỏi gì:**
