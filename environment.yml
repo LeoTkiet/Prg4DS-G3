@@ -9,11 +9,13 @@ dependencies:
   - jupyter
   - jupyterlab
   - ipykernel
+  - nbconvert
+  - jinja2
   - numpy
-  - pandas
+  - pandas>=2.0
   - scipy
-  - matplotlib
-  - seaborn
-  - scikit-learn
+  - matplotlib>=3.9
+  - seaborn>=0.13
+  - scikit-learn>=1.4
   - pyarrow
   - tqdm

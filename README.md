@@ -129,7 +129,8 @@ Prg4DS-G3/
 ├── .gitignore                             # Cấu hình bỏ qua các tệp dữ liệu lớn trong data/raw và data/processed
 ├── data/
 │   ├── raw/                               # Chứa các file JSON tải từ openFDA (2025 Q1 - 2026 Q1) [Không commit]
-│   ├── processed/                         # Chứa 4 bảng phẳng đã làm sạch (.csv, 77 cột) [Không commit]
+│   ├── processed/                         # Chứa 4 bảng phẳng thô (.csv, 77 cột) & clean/ đã chuẩn hóa lõi [Không commit]
+│   │   └── clean/                         # 4 bảng thú y sạch lõi (93.812 ca, loại Human, chuẩn hóa SI & khử trùng)
 │   └── data_dictionary.md                 # Từ điển dữ liệu v2 chi tiết 77 cột và 21 biến dẫn xuất
 ├── src/                                   # Các module Python tái sử dụng giữa các notebook
 │   ├── __init__.py
@@ -147,7 +148,7 @@ Prg4DS-G3/
 │   ├── 02_q4_analysis.ipynb               # Q4: Dùng thuốc sai nhãn Off-label & Kết cục y khoa (Kiệt)
 │   ├── 02_q5_analysis.ipynb               # Q5: Dịch tễ đàn & Tỷ lệ ảnh hưởng ở đàn (Nhi)
 │   └── 03_ml_question.ipynb               # Q6 Học máy & Mục 3.5 Summary & Reflection
-└── slides.pdf                             # Slide thuyết trình cuối kỳ (sẽ cập nhật khi hoàn tất thực nghiệm)
+└── slides.pdf                             # Slide thuyết trình cuối kỳ (15 phút, tổng hợp toàn bộ Q1–Q6)
 ```
 
 ---
@@ -167,7 +168,7 @@ Theo yêu cầu Mục 3.3, mỗi câu hỏi Non-ML phải thỏa mãn **ít nh�
 
 | Mã câu | Chủ sở hữu | Nội dung câu hỏi nghiên cứu & Động lực thực tiễn | D1 | D2 | D3 | D4 | D5 | D6 |
 |:---:|---|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Q1** | **M1 — Khang** | **Đặc trưng phản ứng theo loài & Xu hướng theo quý (2025–2026 Q1):** Những phản ứng bất lợi (VeDDRA terms) nào chiếm tỷ trọng cao nhất ở **Chó, Mèo** và **các loài khác** trong năm 2025, và xu hướng biến động theo quý (so sánh cùng kỳ) của các phản ứng hàng đầu này diễn biến ra sao khi bước sang **2026 Q1**?<br>🎯 *Hỗ trợ bác sĩ thú y và hãng dược dự báo nhu cầu giám sát phản ứng phụ theo mùa.* | ✅ | ✅ | | | ✅ | |
+| **Q1** | **M1 — Khang** | **Đặc trưng phản ứng theo loài & Xu hướng theo quý (2025–2026 Q1):** Những phản ứng bất lợi (VeDDRA terms) nào chiếm tỷ trọng cao nhất ở **Chó, Mèo** và **các loài khác** trong năm 2025, và xu hướng biến động theo quý (so sánh cùng kỳ) của các phản ứng hàng đầu này diễn biến ra sao khi bước sang **2026 Q1**?<br>🎯 *Hỗ trợ bác sĩ thú y và hãng dược dự báo nhu cầu giám sát phản ứng phụ theo mùa.* | ✅ | ✅ | | | ✅ | ✅ |
 | **Q2** | **M2 — Nhi** | **Đặc điểm sinh học & Nguy cơ sự cố nghiêm trọng:** Phân tích mối liên hệ giữa các đặc điểm sinh học (`life_stage`, `age_years`, `weight_kg`, `gender`) với biến cố nghiêm trọng (`serious_ae`), kiểm soát yếu tố loài và đa trị liệu.<br>🎯 *Giúp bác sĩ thú y và hệ thống triage phân tầng nguy cơ lâm sàng, nhận diện nhóm thú nuôi dễ tổn thương (thú già/non, nhẹ cân) để điều chỉnh liều và theo dõi sát.* | | | ✅ | ✅ | ✅ | ✅ |
 | **Q3** | **M3 — Kiệt** | **Tương tác Hoạt chất – Phản ứng giữa Safety Issue và Lack of Efficacy:** Các hoạt chất (`active_ingredients`) và đường dùng (`route`) nào có tỷ suất đồng xuất hiện (Reporting Odds Ratio) đặc trưng nhất với từng phản ứng cụ thể, và pattern này khác biệt ra sao giữa nhóm **Safety Issue** và **Lack Of Expected Effectiveness** trong năm 2025?<br>🎯 *Phân biệt nhóm thuốc có nguy cơ độc tính sinh học với nhóm thuốc đang bị giảm hiệu lực/kháng thuốc (như thuốc giun tim, bọ chét).* | ✅ | ✅ | | ✅ | ✅ | |
 | **Q4** | **M3 — Kiệt** | **Tác động của dùng thuốc sai nhãn (`off-label`) & Đa trị liệu:** Việc dùng thuốc off-label kết hợp với đa trị liệu (`polypharmacy`) trong năm 2025 có liên hệ như thế nào với mức độ nghiêm trọng (`serious_ae`) và kết quả lâm sàng (`outcome`) khi đã kiểm soát biến nhiễu là **loài vật nuôi** và **đối tượng báo cáo (`primary_reporter`)**?<br>🎯 *Cung cấp bằng chứng định lượng cảnh báo rủi ro khi dùng thuốc trái nhãn hướng dẫn.* | ✅ | | ✅ | ✅ | | ✅ |
@@ -225,19 +226,21 @@ flowchart LR
     - `notebooks/02_q4_analysis.ipynb`: Q4 (Kiệt phụ trách — Dùng thuốc sai nhãn Off-label & Kết cục y khoa).
     - `notebooks/02_q5_analysis.ipynb`: Q5 (Nhi phụ trách — Dịch tễ đàn & Tỷ lệ ảnh hưởng ở đàn).
   - Phản biện chéo: Q1 do Kiệt review; Q2 & Q5 do Khang review; Q3 & Q4 do Nhi review.
+- **Kết quả thực tế:**
+  - Hoàn thiện trọn vẹn cả 5 câu hỏi phân tích chuyên sâu (**Q1–Q5**) kèm phản biện chéo đầy đủ qua các Pull Request (#20, #21, #22, #24, #25), bao phủ trọn vẹn **6/6 tiêu chí độ sâu D1–D6** và tổng hợp định lượng vào Master Hub `notebooks/02_analysis.ipynb`.
 
 ### Giai đoạn 4: Xây dựng & Kiểm thử Mô hình Học máy trên năm 2026 (`03_ml_question.ipynb`)
 - **Mục tiêu:** Hoàn thành câu hỏi Q6 đáp ứng trọn vẹn 6 yêu cầu ML của đề cương theo chuẩn Time-based Split.
 - **Kết quả thực tế:**
-  - Xây dựng Pipeline chống rò rỉ dữ liệu nghiêm ngặt: loại bỏ toàn bộ thông tin hậu nghiệm (`outcome`, `treated_for_ae`, `duration`).
-  - Chia tập theo thời gian: Huấn luyện trên 4 quý 2025 (68.340 mẫu non-human sau làm sạch) với `TimeSeriesSplit` 3-fold; Kiểm thử trên Quý 1/2026 (15.376 mẫu non-human).
-  - So sánh mô hình: `HistGradientBoostingClassifier` vượt trội hoàn toàn Trivial Baseline và Logistic Regression (PR-AUC 0.7901 vs 0.4044; ROC-AUC 0.8384).
-  - Xác lập ngưỡng phân loại tối ưu $0.365$ từ Out-of-Fold 2025, đạt Recall **82.23%** trên tập Test 2026 Q1.
-  - Phân tích tầm quan trọng bằng Permutation Importance và rà soát tính ổn định phân phối (Temporal Stability) hàng tuần.
+  - Xây dựng Pipeline chống rò rỉ dữ liệu nghiêm ngặt: loại bỏ toàn bộ thông tin hậu nghiệm (`outcome`, `treated_for_ae`, `duration`) và ghi vết đầy đủ chuỗi kiểm toán số dòng (`94.412 → 93.812` non-human → `83.716` có nhãn `serious_ae`, loại `10.096` hồ sơ khuyết nhãn).
+  - Chia tập theo thời gian: Huấn luyện trên 4 quý 2025 (`68.340` mẫu có nhãn) với `TimeSeriesSplit` cuốn chiếu 3-fold; chấm điểm toàn bộ `17.182` hồ sơ **Quý 1/2026** và đánh giá chỉ số trên `15.376` hồ sơ có nhãn `serious_ae`.
+  - So sánh mô hình: `HistGradientBoostingClassifier` vượt trội cả 3 mô hình đối chứng (CV 2025 AP `0.7819` vs `RandomForest 0.7649`, `LogisticRegression 0.7308`, `DummyClassifier 0.4054`), đạt **AP (PR-AUC) = 0.7908** (so với đường cơ sở điểm hằng trên test `0.4257`) và **ROC-AUC = 0.8385** trên tập Test 2026 Q1.
+  - Xác lập ngưỡng phân loại tối ưu **$0.396$** từ Out-of-Fold 2025, đạt **Recall = 78.99%**, **Precision = 66.98%** và **F1-score = 0.7249** trên tập Test 2026 Q1; đồng thời thống kê tải lượng gắn cờ triage trên toàn bộ `17.182` hồ sơ 2026 Q1.
+  - Phân tích tầm quan trọng bằng Permutation Importance, phân rã lỗi theo loài/người báo cáo/tuổi và đối chiếu tổng lượng ca nghiêm trọng theo tuần/tháng giữa 2026 Q1 và cùng kỳ 2025 Q1.
 
 ### Giai đoạn 5: Tổng kết, Đảm bảo Tái lập (Reproducibility) & Chuẩn bị Bảo vệ
-- **Mục tiêu:** Hoàn thiện Mục 3.5 (Summary & Individual Reflections), cập nhật `README.md`, `LLM_USAGE.md` và `slides.pdf`.
-- **Kiểm tra cuối cùng:** Rà soát chéo giữa các thành viên, xóa môi trường tạm, kiểm tra khả năng chạy lại trơn tru của toàn bộ pipeline từ thu thập đến ML.
+- **Mục tiêu:** Hoàn thiện Mục 3.5 (Summary & Individual Reflections), đồng bộ `README.md`, chuẩn hóa `LLM_USAGE.md`, cập nhật `environment.yml` và hoàn thiện slide thuyết trình (`slides.pdf`).
+- **Kiểm tra cuối cùng:** Rà soát chéo giữa các thành viên, đảm bảo 100% số liệu đồng nhất giữa các notebook và báo cáo, kiểm tra khả năng chạy lại trơn tru của toàn bộ pipeline từ thu thập đến ML.
 
 ### Quy ước làm việc với Git & GitHub (Git Workflow)
 1. **Nhánh (Branching):** Không commit thẳng lên `main`. Mỗi thành viên tạo nhánh theo cú pháp `feature/<ten>-<cong-viec>` (ví dụ: `feature/kiet-data-loader`, `feature/nhi-eda-numerical`, `feature/khang-q6-ml`).
@@ -252,28 +255,48 @@ Dựa trên toàn bộ cơ sở dữ liệu **94.412 báo cáo sự cố bất l
 
 ### 6.1. Khám phá Dữ liệu (EDA) & Dịch tễ học Cảnh giác dược Thú y
 1. **Thiên lệch cơ cấu loài và hành vi báo cáo:**
-   - Thú cưng gia đình chiếm tỷ trọng áp đảo trong tổng số báo cáo: **Chó** (*Dog*) chiếm khoảng **65%** và **Mèo** (*Cat*) chiếm khoảng **20%**. Trong khi đó, ở nhóm vật nuôi trang trại, **Bò** (*Cattle*) là loài được báo cáo nhiều nhất.
-   - Cơ chế khuyết dữ liệu thể hiện rõ tính chất **MAR (Missing at Random)** theo nhóm người báo cáo (`primary_reporter`): Bác sĩ thú y (*Veterinarian*) cung cấp hồ sơ đầy đủ nhất về mặt sinh trắc học và lâm sàng. Ngược lại, Chủ vật nuôi (*Animal Owner*) bị khuyết trường tuổi ở **26.4%** số ca và khuyết đánh giá mức độ nghiêm trọng (`serious_ae`) ở **13.2%** số ca.
+   - Trong **93.812 báo cáo thú y sạch** (sau khi loại 600 ca `Human`), thú cưng gia đình chiếm tỷ trọng áp đảo: **Chó** (*Dog*) chiếm **70.46%** và **Mèo** (*Cat*) chiếm **16.73%** (gộp **87.19%**). Ở nhóm vật nuôi trang trại (**964** đàn hợp lệ), **Bò** (*Cattle*, 801 đàn) chiếm chủ đạo.
+   - Cơ chế khuyết dữ liệu thể hiện rõ tính chất **MAR (Missing at Random)** theo nhóm người báo cáo (`primary_reporter`): Bác sĩ thú y (*Veterinarian*) cung cấp hồ sơ đầy đủ nhất về mặt sinh trắc học và lâm sàng (chỉ khuyết 3.9% `serious_ae`). Ngược lại, Chủ vật nuôi (*Animal Owner*) bị khuyết trường tuổi ở **26.4%** số ca, khuyết cân nặng **28.9%** và khuyết đánh giá mức độ nghiêm trọng (`serious_ae`) ở **13.2%** số ca.
 2. **Khuyết thiếu ẩn (Hidden Missingness) & Tính bảo mật thông tin:**
-   - **100%** giá trị ở các cột thương hiệu (`brand_name`) và nhà sản xuất (`manufacturer_name`) trong bảng `drugs.csv` bị FDA CVM che giấu dưới nhãn `'MSK'` (Masked) để bảo mật thương mại trong cơ sở dữ liệu công khai. Do đó, các phân tích dược lý bắt buộc phải dựa vào tên hoạt chất chuẩn hóa (`active_ingredients`) hoặc mã phân loại `atc_vet_code`.
-   - Bảng kết cục lâm sàng (`outcomes.csv`) ghi nhận tới **30.56%** (26.017 dòng) mang giá trị `'Outcome Unknown'`, đòi hỏi phải xử lý cẩn trọng khi phân tích diễn tiến bệnh lý.
+   - **100%** giá trị ở các cột thương hiệu (`brand_name`) và nhà sản xuất (`manufacturer_name`) trong bảng `drugs.csv` bị FDA CVM che giấu dưới nhãn `'MSK'` (Masked) để bảo mật thương mại trong cơ sở dữ liệu công khai. Do đó, các phân tích dược lý bắt buộc phải dựa vào tên hoạt chất chuẩn hóa (`active_ingredients_clean`) hoặc mã phân loại `atc_vet_code`.
+   - Bảng kết cục lâm sàng (`outcomes.csv`) ghi nhận tới **30.56%** (26.017 dòng gốc) mang giá trị `'Outcome Unknown'`, đòi hỏi phải gắn cờ `is_outcome_known` và xử lý cẩn trọng khi phân tích diễn tiến bệnh lý.
 3. **Rủi ro đa trị liệu (Polypharmacy):**
-   - Đa số các ca bệnh ghi nhận từ 1 đến 2 loại thuốc đồng thời (trung bình 1.84 thuốc/báo cáo). Tuy nhiên, khi số lượng thuốc sử dụng đồng thời tăng lên $\ge 3$ loại, tỷ lệ phát sinh biến cố bất lợi nghiêm trọng (`serious_ae = True`) tăng vọt rõ rệt, nhấn mạnh tầm quan trọng của việc kiểm soát tương tác thuốc trong thú y.
+   - Đa số các ca bệnh ghi nhận từ 1 đến 2 loại thuốc đồng thời (trung bình 1.84 thuốc/báo cáo, tối đa 39 thuốc). Tuy nhiên, khi số lượng thuốc sử dụng đồng thời tăng lên $\ge 3$ loại, tỷ lệ phát sinh biến cố bất lợi nghiêm trọng (`serious_ae = True`) tăng vọt rõ rệt (đặc biệt ở Mèo tăng gấp đôi từ 26.54% lên 52.75%), nhấn mạnh tầm quan trọng của việc kiểm soát tương tác thuốc trong thú y.
 
-### 6.2. Dự báo Mức độ Nghiêm trọng & Phân tầng Ưu tiên (ML Q6)
+### 6.2. Các phát hiện chính từ 5 Câu hỏi Phân tích Chuyên sâu (Q1–Q5)
+1. **Q1 — Phản ứng VeDDRA hàng đầu & Xu hướng 5 quý (`02_q1_analysis.ipynb`):**
+   - Sau khi loại 9.719 báo cáo `With no Adverse Events` và 58 ca `Other` không rõ loài, năm 2025 ghi nhận sự phân hóa rõ rệt: **Chó** ($n = 54.119$) dẫn đầu là `Vomiting` (**12.90%**) và nhóm kém hiệu quả thuốc ký sinh trùng (`LoE heartworm` 10.47%, `hookworm` 8.15%, `flea` 7.82%); **Mèo** ($n = 12.660$) dẫn đầu là `Lethargy` (**11.88%**), `Lack of efficacy - NOS` (9.94%) và `LoE flea` (9.91%); nhóm **Other** ($n = 1.814$) dẫn đầu là `Lack of efficacy - NOS` (**32.86%**) và `Death` (26.52%).
+   - So với cùng kỳ 2025 Q1 sang **2026 Q1**, tăng mạnh nhất là `LoE (ectoparasite) - flea` ở Mèo (**+5.07 pp**, 5.43% $\rightarrow$ 10.50%) và Chó (**+4.82 pp**, 3.33% $\rightarrow$ 8.15%). Kiểm định $\chi^2$ qua 5 quý có ý nghĩa ở Chó ($p = 7.30 \times 10^{-162}$, $V = 0.0719$) và Mèo ($p = 6.22 \times 10^{-20}$, $V = 0.0625$), không có ý nghĩa ở Other ($p = 0.133$); 5 quý cho thấy dao động theo quý nhưng chưa đủ khẳng định chu kỳ mùa vụ lặp lại nhiều năm.
+2. **Q2 — Đặc điểm sinh học & Nguy cơ biến cố nghiêm trọng (`02_q2_analysis.ipynb`):**
+   - Trên tập hoàn chỉnh (Baseline 2025: $58.256$ ca; toàn giai đoạn 5 quý: $71.607$ ca gồm $58.634$ Chó và $12.973$ Mèo), sau khi kiểm soát loài và số thuốc, thú già (**`Senior`**) tăng nguy cơ `serious_ae` gần **+29%–30%** ở cả hai loài (Chó $\text{aOR} = 1.293$, Mèo $\text{aOR} = 1.298$; Baseline 2025 lần lượt $1.336$ và $1.365$), còn giới tính (`Female vs. Male`) không có ý nghĩa lâm sàng.
+   - **Hai phát hiện bất ngờ:** (i) Cân nặng tác động **đảo chiều theo loài** — Chó nặng cân có nguy cơ cao hơn ($\text{aOR} = 1.065$ mỗi $+1\text{ SD}$; `Q1` 42.42% $\rightarrow$ `Q4` 47.68%), ngược lại Mèo nhẹ cân có nguy cơ cao hơn ($\text{aOR} = 0.922$; `Q1` 38.46% $\rightarrow$ `Q4` 31.71%); (ii) "Đường cong chữ U" ở Mèo non (`Junior`) **biến mất hoàn toàn** khi kiểm soát cân nặng và đa trị liệu ($\text{aOR} = 1.050, p = 0.525$), cho thấy thể trọng nhẹ và đa trị liệu (`3+ thuốc`: $\text{aOR} = 2.827$ ở Mèo vs $1.749$ ở Chó) mới là yếu tố thúc đẩy thực sự. Kết luận vững qua cả 4 phép thử D6 (`R1–R4`).
+3. **Q3 — Tín hiệu đồng xuất hiện ROR Hoạt chất & Đường dùng: Safety Issue vs. LOEE (`02_q3_analysis.ipynb`):**
+   - Tách riêng phân tích trên `67.831` báo cáo lâm sàng năm 2025 (kiểm định toàn không gian đạt ngưỡng $n_{\text{exp}} \ge 50, n_{\text{rea}} \ge 50, a \ge 20$ kèm BH-FDR $q < 0.05$) làm lộ diện hai cấu trúc phân cực hoàn toàn khác biệt:
+     - **Safety Issue** ($N = 37.811, M = 3.372 \rightarrow 1.996$ cặp đạt FDR, $1.566$ tín hiệu mạnh $\text{ROR} \ge 2.0$): Nổi bật là các tín hiệu đặc hiệu cơ quan ở thuốc nội tiết – chuyển hóa (`Bexagliflozin × Elevated BHP`, $\text{ROR} = 3791.48$; `Desoxycortone Pivalate × High Na:K ratio`, $\text{ROR} = 1279.56$; `Trilostane × Abnormal ACTH`, $\text{ROR} = 593.09$; `Velagliflozin × Ketosis`, $\text{ROR} = 68.93$) và cụm thuốc nhỏ tai gây điếc/rối loạn tiền đình (`Hydrocortisone Aceponate`, `Miconazole`, `Clotrimazole`, `Mometasone Furoate`, $\text{ROR} = 128.44\text{–}387.27$).
+     - **LOEE** ($N = 23.705, M = 203 \rightarrow 142$ cặp đạt FDR, $107$ tín hiệu mạnh): Tập trung vào thất bại bảo vệ/hiệu lực của vắc-xin Lyme tái tổ hợp (`Borrelia Burgdorferi Ospa × LOEE Borrelia`, 99.56%, $\text{ROR} = 3030.77$), thất bại kiểm soát bệnh hô hấp đàn bò (`Tulathromycin × Necropsy`, $\text{ROR} = 2754.47$) và thuốc ký sinh trùng (`Fluralaner × Flea LOEE`, $\text{ROR} = 45.24$; `Ivermectin × Heartworm`, $\text{ROR} = 6.72$).
+   - Kiểm soát biến nhiễu loài bằng Cochran–Mantel–Haenszel ($\text{ROR}_{\text{MH}}$) loại bỏ **$-78.1\%$** phóng đại giả ở `Velagliflozin × Ketosis` ($66.98 \rightarrow 14.64$) và phát hiện nhiễu đảo chiều ở `Selamectin × Flea LOEE` ($4.44 \rightarrow 1.77 < 2.0$); toàn bộ **6/6 tín hiệu theo dõi** đều duy trì bền vững $\text{ROR} > 2.0$ sang quý kiểm thử `2026 Q1`.
+4. **Q4 — Dùng thuốc sai nhãn (`Off-label`) × Đa trị liệu & Kết cục y khoa (`02_q4_analysis.ipynb`):**
+   - Trên `76.630` báo cáo thú y năm 2025 (`50.588` complete-case `serious_ae`, `36.709` complete-case `outcome`), sau khi kiểm soát đồng thời loài và đối tượng báo cáo, tổ hợp **`Off-label + Polypharmacy`** đẩy tỷ lệ nghiêm trọng lên đỉnh **54.33%** ($\text{aOR}_{\text{joint}} = 2.02$, 95% CI: $[1.91, 2.13]$) và tỷ lệ tử vong/an tử tăng gấp **3.95 lần** từ 3.94% lên **15.60%** ($\text{aOR}_{\text{joint}} = 3.82$, 95% CI: $[3.41, 4.28]$; trong đó `Polypharmacy` riêng lẻ có $\text{aOR} = 3.69$).
+   - Hành vi **dùng sai loài (`Species Off-Label`)** có tỷ lệ tử vong cao nhất (**25.09%**, gấp 3.28 lần chuẩn On-label 7.65%), còn **dùng ngoài chỉ định bệnh (`Indication Off-Label`)** có tỷ lệ nghiêm trọng cao nhất (**61.58%**). Phân tầng người báo cáo giải mã cơ chế khuyết **MNAR** ở nhóm `Animal Owner` bỏ trống trường nhãn (tử vong **27.23%**). Hiệu ứng cộng gộp `Off-label + Polypharmacy` bất biến qua toàn bộ **9/9 kịch bản độ nhạy D6** ($p < 10^{-25}$), kể cả kiểm chứng độc lập trên **2026 Q1** ($\text{aOR}_{\text{joint}} = 1.91$ cho Serious và **$4.16$** cho Fatal).
+5. **Q5 — Dịch tễ đàn & Tỷ lệ động vật bị ảnh hưởng (`attack_rate`) ở Gia súc, Gia cầm (`02_q5_analysis.ipynb`):**
+   - Trên **964 báo cáo đàn hợp lệ** (801 đàn Bò, 67 Heo, 38 Gà, 34 Dê, 15 Cừu, 9 Gà tây), trung vị `attack_rate` chung là **0.4325** (trung bình `0.5203`). **Quy mô đàn** là yếu tố chi phối mạnh nhất ($\rho = -0.566$, Kruskal–Wallis $H = 286.70, p = 5.54 \times 10^{-63}$): đàn nhỏ (`< 20` con) có trung vị **1.000**, đàn vừa (`20–143` con) **0.2977**, đàn lớn (`> 143` con) giảm còn **0.1348**.
+   - Dù mô tả biên cho thấy `Intramuscular` và `Topical` có trung vị `1.000` còn `Oral` thấp nhất `0.1647` ($H = 68.77, p = 1.85 \times 10^{-13}$), khi phân tầng kiểm soát đồng thời loài và quy mô đàn (**D4**), sự chênh lệch `Oral` vs `IM` không còn có ý nghĩa thống kê ($p = 0.30\text{–}0.68$), chứng minh quy mô đàn là biến nhiễu lớn. Kết luận ổn định qua cả hai kịch bản D6 (loại bỏ `R1` hoặc chặn về 1.0 `R2` đối với 1 ca ngoại lai `1.2857`).
+
+### 6.3. Dự báo Mức độ Nghiêm trọng & Phân tầng Ưu tiên (ML Q6 — `03_ml_question.ipynb`)
 1. **Hiệu năng vượt trội trong dự báo ngoài thời gian (Out-of-Time Generalization):**
-   - Trên tập kiểm thử độc lập **2026 Q1** (15.376 ca non-human hoàn chỉnh), mô hình `HistGradientBoostingClassifier` đạt chỉ số **PR-AUC = 0.7901** (tăng vọt gần gấp đôi so với Baseline ngẫu nhiên là **0.4044**; vượt trội hơn Logistic Regression là 0.7281 và Random Forest là 0.7654) và **ROC-AUC = 0.8384**.
+   - Trên **15.376** hồ sơ có nhãn thuộc tập kiểm thử độc lập **2026 Q1** (trong tổng số **17.182** hồ sơ 2026 Q1 được chấm điểm), mô hình `HistGradientBoostingClassifier` đạt **AP (PR-AUC) = 0.7908** (vượt trội đường cơ sở điểm hằng trên test là **0.4257**; trên CV 2025 đạt `0.7819` vs `RandomForest 0.7649`, `LogisticRegression 0.7308` và `DummyClassifier 0.4054`) và **ROC-AUC = 0.8385**.
 2. **Ngưỡng Triage lâm sàng và khả năng bắt giữ ca nguy cấp:**
-   - Áp dụng ngưỡng cắt xác suất tối ưu **$0.365$** (được xác định độc lập thông qua kiểm định chéo Out-of-Fold trên dữ liệu năm 2025), mô hình đạt độ nhạy (Recall) **82.23%**, độ chuẩn xác (Precision) **65.18%**, và **F1-score = 0.7272** trên Quý 1/2026.
-   - Điều này mang ý nghĩa thực tiễn to lớn cho FDA CVM: hệ thống Triage tự động có khả năng phát hiện sớm và gắn cờ ưu tiên xử lý cho **hơn 82% tổng số ca biến cố nghiêm trọng thực tế** ngay tại thời điểm vừa tiếp nhận hồ sơ mà không bị rò rỉ thông tin hậu nghiệm.
-3. **Các yếu tố quyết định mức độ nghiêm trọng (Feature Importance):**
-   - Kết quả phân tích Permutation Importance trên tập kiểm thử 2026 Q1 chỉ ra 4 nhóm đặc trưng có ảnh hưởng lớn nhất đến mức độ nghiêm trọng:
-     1. **Hoạt chất chính (`top_active_ingredients`):** Khi xáo trộn làm sụt giảm **0.1791** PR-AUC (yếu tố mang tính quyết định cao nhất).
-     2. **Đường dùng thuốc chính (`route_primary`):** Làm sụt giảm **0.0591** PR-AUC (các đường tiêm tĩnh mạch/tiêm bắp thường gắn liền với bệnh cảnh nặng hơn đường uống/bôi ngoài da).
-     3. **Phân loại bản chất biến cố (`type_of_information`):** Làm sụt giảm **0.0461** PR-AUC.
-     4. **Dạng bào chế chính (`dosage_form_primary`):** Làm sụt giảm **0.0151** PR-AUC.
-4. **Tính ổn định phân phối theo thời gian (Temporal Stability):**
-   - Phân tích chuỗi thời gian số lượng ca nghiêm trọng theo tuần trong Quý 1/2026 dao động ổn định trong khoảng **450–570 ca/tuần**, phản ánh nhịp độ tương đồng với Quý 1/2025. Không phát hiện sự cố dịch chuyển phân phối đột ngột (*concept drift*), chứng minh mô hình có độ bền vững cao khi triển khai giám sát thường quy.
+   - Áp dụng ngưỡng cắt xác suất tối ưu **$0.396$** (xác định độc lập qua kiểm định chéo Out-of-Fold trên dữ liệu năm 2025), mô hình đạt **Recall = 78.99%**, **Precision = 66.98%** và **F1-score = 0.7249** trên tập Test có nhãn Quý 1/2026.
+   - Hệ thống Triage tự động có thể phát hiện sớm và gắn cờ ưu tiên xử lý gần **79% tổng số ca biến cố nghiêm trọng thực tế** ngay tại thời điểm tiếp nhận hồ sơ mà không bị rò rỉ thông tin hậu nghiệm, đồng thời hỗ trợ ước lượng tải lượng gắn cờ trên toàn bộ `17.182` hồ sơ 2026 Q1 (bao gồm cả `1.806` hồ sơ chưa gán nhãn).
+3. **Các yếu tố quyết định mức độ nghiêm trọng (Permutation Importance trên 2026 Q1):**
+   - 4 nhóm đặc trưng có ảnh hưởng lớn nhất đến AP (PR-AUC):
+     1. **Hoạt chất chính (`top_active_ingredients`):** làm giảm **0.1763** AP khi xáo trộn (yếu tố chi phối lớn nhất).
+     2. **Đường dùng thuốc chính (`route_primary`):** làm giảm **0.0588** AP.
+     3. **Phân loại bản chất biến cố (`type_of_information`):** làm giảm **0.0458** AP.
+     4. **Dạng bào chế chính (`dosage_form_primary`):** làm giảm **0.0158** AP.
+4. **Kiểm tra Temporal Drift & Đối chiếu xu hướng tuần/tháng 2026 Q1 vs. 2025 Q1:**
+   - Tỷ lệ ca nghiêm trọng trong nhóm có nhãn giữ mức ổn định cao giữa Train 2025 (**41.87%**) và Test 2026 Q1 (**42.57%**, chênh nhẹ **+0.70 điểm phần trăm**).
+   - Tuy nhiên, khi đối chiếu tổng lượng báo cáo nghiêm trọng theo tuần/tháng với dự báo cơ sở cùng kỳ 2025 Q1 (**MAE = 89.5 ca/tuần** và **387.7 ca/tháng**), hai tháng đầu năm 2026 thấp hơn cùng kỳ (**Tháng 1: −419 ca**, **Tháng 2: −265 ca**) nhưng **Tháng 3 tăng vọt (+479 ca)** (tuần 12–13 tăng `+292` và `+186` ca/tuần). Do đó, tổng lượng 2026 Q1 không khớp hoàn toàn dự báo cơ sở cố định từ 2025 Q1 và cần kết hợp bối cảnh độ trễ đăng tải snapshot.
 
 ---
 
@@ -298,7 +321,7 @@ conda activate ds-env
 Kiểm tra môi trường:
 ```powershell
 python --version
-python -c "import numpy, pandas, scipy, sklearn, matplotlib, seaborn, pyarrow; print('Môi trường OK')"
+python -c "import numpy, pandas, scipy, sklearn, matplotlib, seaborn, pyarrow, jinja2; print('Môi trường OK')"
 ```
 
 Nếu môi trường đã tồn tại và cần cập nhật theo `environment.yml`:
@@ -358,7 +381,7 @@ jupyter lab
 ```
 
 Mở và chạy (**Restart Kernel and Run All**) lần lượt theo thứ tự:
-1. [`notebooks/01_collection_exploration.ipynb`](notebooks/01_collection_exploration.ipynb) — Đọc dữ liệu thô từ `data/raw/`, khám phá schema, xử lý làm sạch cơ bản, chuẩn hóa sinh trắc học và xuất 4 bảng phẳng vào `data/processed/`.
+1. [`notebooks/01_collection_exploration.ipynb`](notebooks/01_collection_exploration.ipynb) — Đọc dữ liệu thô từ `data/raw/`, khám phá schema, xử lý làm sạch lõi, chuẩn hóa sinh trắc học và xuất 4 bảng phẳng chuẩn hóa vào `data/processed/` và `data/processed/clean/`.
 2. [`notebooks/02_analysis.ipynb`](notebooks/02_analysis.ipynb) (Master Hub) hoặc các notebook phân tích chuyên sâu theo từng câu hỏi:
    - [`notebooks/02_q1_analysis.ipynb`](notebooks/02_q1_analysis.ipynb): Phân tích sâu **Q1** (Phản ứng VeDDRA & Xu hướng theo quý).
    - [`notebooks/02_q2_analysis.ipynb`](notebooks/02_q2_analysis.ipynb): Phân tích sâu **Q2** (Đặc điểm sinh học & Biến cố nghiêm trọng).
