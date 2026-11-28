@@ -95,6 +95,18 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
   - Rà soát cẩn trọng pipeline tiền xử lý và tham số mô hình (`OneHotEncoder`, `HistGradientBoostingClassifier`, `TimeSeriesSplit`) để đảm bảo không rò rỉ dữ liệu (Data Leakage) và cố định seed `random_state=42` đảm bảo tính tái lập (Reproducibility).
   - Toàn bộ số liệu và thông tin cập nhật trong `data_dictionary.md` và `README.md` được đối chiếu chéo với schema thực tế từ `src/data_loader.py` và bảng kết quả chạy thực nghiệm trước khi ghi nhận.
 
+### Lần 9 — Hỗ trợ kỹ thuật thống kê, thuật toán tối ưu và khung phân tích cho Câu hỏi Q2 (2026-11-27)
+- **Thành viên:** Trần Ngô Uyên Nhi (`24120210`)
+- **Công cụ:** Google Antigravity (Gemini)
+- **Đã hỏi gì:**
+  - Các phương pháp thống kê suy diễn nhằm đáp ứng tiêu chí độ sâu `D3–D6` theo rubric:
+    - Thuật toán IRLS (Iteratively Reweighted Least Squares) giải bài toán Hồi quy Logistic Đa biến trực tiếp bằng `numpy`/`scipy`, kèm tính toán ma trận hiệp phương sai tiệm cận Fisher Information để xuất sai số chuẩn Wald, 95% CI và p-value và một số thuật toán liên quan.
+    - Công thức và code mẫu tính kiểm định Cochran-Mantel-Haenszel (CMH pooled Odds Ratio) cùng phương sai Robins-Breslow-Greenland để kiểm soát biến gây nhiễu `polypharmacy_group` theo phân tầng loài.
+    - Vẽ biểu đồ Forest Plot trực quan hóa aOR và 4 kịch bản kiểm tra độ vững D6 (Robustness/Sensitivity checks) bằng `matplotlib`.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - **Sử dụng có chọn lọc & đối chiếu thuật toán:** Thành viên kiểm tra lại từng công thức toán học của IRLS và CMH do AI gợi ý, đối chiếu với lý thuyết thống kê để hiểu rõ cơ chế ước lượng trước khi đưa vào notebook; tự kiểm tra và chạy thử nghiệm các bước tiền xử lý với `log_row_count_change()` để kiểm soát số lượng dòng dữ liệu thực tế (58.634 ca Chó và 12.973 ca Mèo).
+  - **Tự thực hiện phân tích và viết biện giải độc lập:** đọc và phân tích bảng số liệu thực nghiệm (các giá trị aOR, p-value, tỷ lệ biến cố), từ đó tự biên soạn và chỉnh sửa toàn bộ phần diễn giải kết quả, ý nghĩa lâm sàng thú y, bàn luận về phát hiện bất ngờ và các hạn chế dữ liệu trong notebook [02_q2_analysis.ipynb](notebooks/02_q2_analysis.ipynb) theo văn phong và nhận định chuyên môn cá nhân.
+
 ---
 
 ## Mẫu ghi nhận cho các phiên tiếp theo
