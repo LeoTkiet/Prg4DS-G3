@@ -164,6 +164,11 @@ Các biến mới được tạo ra trong quá trình Tiền xử lý (Mục 3.2
 | `species_group` | `category` | Ánh xạ `species` thành 3 nhóm lớn: `Dog` (Chó), `Cat` (Mèo), và `Other` (Các loài khác) | Phân tầng báo cáo để xác định Top thuật ngữ VeDDRA đặc trưng | Q1 |
 | `attack_rate` (hoặc `affected_ratio`) | `float` | `number_of_animals_affected / number_of_animals_treated` ở báo cáo đàn gia súc (`treated > 0`) | Tỷ lệ động vật bị ảnh hưởng trong đàn được điều trị | Q5 |
 | `attack_rate_gt_1` | `bool` | Cờ `attack_rate > 1.0` (giữ nguyên ca bất thường để chạy phân tích độ nhạy) | Phục vụ kiểm định độ vững **D6** (loại vs. giữ ca `attack_rate > 1`) | Q5 |
+| `treated_n` | `float` | Ép kiểu `number_of_animals_treated` sang số thực sau khi lọc `> 0` ở báo cáo đàn | Mẫu số và quy mô đàn trong tính toán Q5 | Q5 |
+| `affected_n` | `float` | Ép kiểu `number_of_animals_affected` sang số thực ở báo cáo đàn hợp lệ | Tử số tính `attack_rate` trong Q5 | Q5 |
+| `herd_size_group` | `category` | Phân vị 33%/67% của `treated_n`: `Nhỏ (< Q33)`, `Vừa (Q33-Q67)`, `Lớn (> Q67)` | Phân tích liên hệ giữa quy mô đàn và `attack_rate` | Q5 |
+| `route_grp` | `category` | Giữ 5 nhóm đường dùng thường gặp; gom nhãn khác thành `Other/Parenteral`, giữ `Unknown` riêng | So sánh `attack_rate` theo đường dùng thuốc | Q5 |
+| `species_grp` | `category` | Gộp `species == 'Cattle'` thành `Cattle`; các loài còn lại thành `Non-Cattle` | Kiểm soát phân tầng loài trong phân tích đường dùng Q5 | Q5 |
 | `active_ingredients_clean` | `string` | Ở `drugs.csv` sạch: loại khoảng trắng thừa và chuyển placeholder (`Noinformationsupplied`, `Unknown`, `Unknown Medication`, `*(Unknown)` như `Anesthetic (Unknown)`, `Antibiotic (Unknown)`...) thành `NaN` | Tách bạch thiếu ẩn khỏi tên hoạt chất thực khi tính ROR | Q3 |
 | `is_outcome_known` | `bool` | Ở `outcomes.csv` sạch: `True` nếu `medical_status != 'Outcome Unknown'` | Tách minh bạch nhóm biết/không biết kết cục lâm sàng | Q4 |
 | `route_primary` | `category` | Đường dùng thuốc đầu tiên / chính trong báo cáo (`Oral`, `Topical`, `Subcutaneous`, ...) | Đặc trưng dược lý quan trọng thứ 2 trong mô hình triage | Q3, Q5, Q6 |
