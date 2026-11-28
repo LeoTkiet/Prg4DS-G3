@@ -95,7 +95,7 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
   - Rà soát cẩn trọng pipeline tiền xử lý và tham số mô hình (`OneHotEncoder`, `HistGradientBoostingClassifier`, `TimeSeriesSplit`) để đảm bảo không rò rỉ dữ liệu (Data Leakage) và cố định seed `random_state=42` đảm bảo tính tái lập (Reproducibility).
   - Toàn bộ số liệu và thông tin cập nhật trong `data_dictionary.md` và `README.md` được đối chiếu chéo với schema thực tế từ `src/data_loader.py` và bảng kết quả chạy thực nghiệm trước khi ghi nhận.
 
-### Lần 9 — Rà soát chuyên sâu và hiệu chỉnh Q1 theo phản biện nghiêm ngặt (2026-11-26)
+### Lần 13 — Rà soát chuyên sâu và hiệu chỉnh Q1 theo phản biện PR #22 (2026-11-26 → 2026-11-28)
 - **Thành viên:** Đinh Công Khang (`24120332`)
 - **Công cụ:** OpenCode (AI coding agent; model `opencode/big-pickle`)
 - **Đã hỏi gì:**
@@ -106,6 +106,10 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
   - Áp dụng diff có biên tập: gộp bộ lọc vào cell tiền xử lý kèm log số dòng; thêm `n_all`/`n_no_defect` vào bảng robustness; đổi lệnh `display()` để liệt kê đủ Top 10; giữ nguyên chữ ký 12 cell, metadata và 2 cell code đầu của template.
   - Phát hiện vấn đề phát sinh sau khi lọc (ô kỳ vọng χ² của `Other` chỉ 2,3) nên điều chỉnh còn 6 term cho riêng nhóm này, chạy lại toàn bộ 5 cell code và viết lại markdown kết quả theo số liệu output thực tế (`Lack of efficacy - NOS` 596/1.814 = 32,86%; χ² p = 0,133).
   - Đối chiếu với `git show HEAD:notebooks/02_q1_analysis.ipynb` để xác nhận cấu trúc/metadata không đổi; chỉ ghi nhận vào nhật ký những nội dung đã kiểm chứng bằng thực thi và số liệu thực tế.
+  - Xử lý phản biện vòng 2 của PR #22: khôi phục 5 notebook ngoài phạm vi Q1 về `git merge-base HEAD origin/main` (tránh xung đột với PR #24/#25/#20/#21 đã merge), giữ PR chỉ còn `02_q1_analysis.ipynb` và `LLM_USAGE.md`.
+  - Sửa `shorten_term()` để ưu tiên giữ hậu tố phân biệt (`- heartworm`, `- hookworm`, `- flea`) trên legend; mở rộng `xlim` của biểu đồ 1/3 và đặt lại tọa độ nhãn `2026 Q1` theo `ylim` thực tế, đồng thời thêm nhãn trục X cho biểu đồ 2. Chạy lại toàn bộ notebook để cập nhật 3 ảnh PNG.
+  - Chú thích rõ `Binomial(n, p_hat)/n` tương đương bootstrap nhị phân có hoàn lại; đối chiếu lại CI Mèo `12,11%` giữa output và markdown.
+  - Đổi số thứ tự mục nhật ký từ 9 sang 13 để tránh trùng các mục 9–12 đã có trên `main`; nếu PR #23 merge sau PR #22, mục của PR #23 cần đổi sang 14.
 
 ---
 
