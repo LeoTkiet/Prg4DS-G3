@@ -95,7 +95,18 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
   - Rà soát cẩn trọng pipeline tiền xử lý và tham số mô hình (`OneHotEncoder`, `HistGradientBoostingClassifier`, `TimeSeriesSplit`) để đảm bảo không rò rỉ dữ liệu (Data Leakage) và cố định seed `random_state=42` đảm bảo tính tái lập (Reproducibility).
   - Toàn bộ số liệu và thông tin cập nhật trong `data_dictionary.md` và `README.md` được đối chiếu chéo với schema thực tế từ `src/data_loader.py` và bảng kết quả chạy thực nghiệm trước khi ghi nhận.
 
-### Lần 9 — Hỗ trợ kỹ thuật thống kê, thuật toán tối ưu và khung phân tích cho Câu hỏi Q2 (2026-11-27)
+### Lần 9 — Sửa và kiểm chứng pipeline ML Q6 trong NB03 bằng Build mode (2026-11-26)
+- **Thành viên:** Đinh Công Khang (`24120332`)
+- **Công cụ:** ChatGPT Codex (Build mode)
+- **Đã hỏi gì:** Áp dụng trực tiếp năm bản sửa từ phiên phản biện phần học máy Q6 trong `notebooks/03_ml_question.ipynb` và kiểm chứng kết quả trên dữ liệu hiện có.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - Codex trực tiếp sửa mã kiểm định cuốn chiếu theo quý trong năm 2025, tách tập chấm điểm toàn bộ báo cáo Q1/2026 khỏi nhóm có nhãn dùng để tính chỉ số và sửa cờ `has_off_label_use` để nhận trường hợp `used_according_to_label = false`.
+  - Codex trực tiếp sửa phần phân tích và các dòng in kết luận trong notebook. Các sửa đổi gồm dùng tỷ lệ dương trên tập test làm đường cơ sở AP, tính recall và chênh lệch tỷ lệ nhãn từ dữ liệu, thay câu kết luận cố định về xu hướng bằng đối chiếu dự báo cơ sở cùng kỳ theo tuần/tháng và báo cáo số gắn cờ triage riêng.
+  - Codex đối chiếu số lượng và sai số dự báo với CSV, chạy lại các cell huấn luyện và đánh giá bằng Python, rồi kiểm tra riêng hai dòng in AP và recall đã cập nhật. Lần chạy xác nhận 17.182 báo cáo được chấm điểm, trong đó 15.376 có nhãn dùng để đánh giá. Output cũ được xóa khỏi notebook.
+
+---
+
+### Lần 10 — Hỗ trợ kỹ thuật thống kê, thuật toán tối ưu và khung phân tích cho Câu hỏi Q2 (2026-11-27)
 - **Thành viên:** Trần Ngô Uyên Nhi (`24120210`)
 - **Công cụ:** Google Antigravity (Gemini)
 - **Đã hỏi gì:**
@@ -109,8 +120,8 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
 
 ---
 
-### Lần 10 — Hoàn thiện phân tích Câu hỏi Q5 và đồng bộ phát hiện (2026-11-27)
-- **Thành viên:** Trần Ngô Uyên Nhi (24120210)
+### Lần 11 — Hoàn thiện phân tích Câu hỏi Q5 và đồng bộ phát hiện (2026-11-27)
+- **Thành viên:** Trần Ngô Uyên Nhi (`24120210`)
 - **Công cụ:** GitHub Copilot (Copilot SDK in VS Code)
 - **Đã hỏi gì:** Rà lỗi và chạy lại `notebooks/02_q5_analysis.ipynb`, thay phần ghi nhận placeholder bằng kết quả thực tế, bổ sung phát hiện Q5 vào notebook tổng hợp `02_analysis.ipynb`, cập nhật biến dẫn xuất mới vào `data/data_dictionary.md`.
 - **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
@@ -120,7 +131,7 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
 
 ---
 
-### Lần 11 — Triển khai và hoàn thiện phản biện phân tích chuyên sâu Câu hỏi Q3 (Tỷ suất đồng xuất hiện ROR Hoạt chất × Triệu chứng: Safety Issue vs. LOEE — Task T17) (2026-11-27)
+### Lần 12 — Triển khai và hoàn thiện phản biện phân tích chuyên sâu Câu hỏi Q3 (Tỷ suất đồng xuất hiện ROR Hoạt chất × Triệu chứng: Safety Issue vs. LOEE — Task T17) (2026-11-27)
 - **Thành viên:** Huỳnh Tuấn Kiệt (`24120356`)
 - **Công cụ:** Google Antigravity
 - **Đã hỏi gì:**
@@ -134,7 +145,7 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
 
 ---
 
-### Lần 12 — Triển khai phân tích chuyên sâu Câu hỏi Q4 (Dùng thuốc sai nhãn Off-label, Đa trị liệu & Kết cục y khoa — Task T18) (2026-11-27)
+### Lần 13 — Triển khai phân tích chuyên sâu Câu hỏi Q4 (Dùng thuốc sai nhãn Off-label, Đa trị liệu & Kết cục y khoa — Task T18) (2026-11-27)
 - **Thành viên:** Huỳnh Tuấn Kiệt (`24120356`)
 - **Công cụ:** Google Antigravity
 - **Đã hỏi gì:**
@@ -145,7 +156,9 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
   - Chuyển phép tính $p$-value Wald sang `2.0 * scipy.stats.norm.sf(abs(z))` để tránh hiện tượng tràn số dưới (underflow về `0.00e+00`) khi $|z|$ lớn, đồng thời bổ sung bảng phân rã 7 hành vi sai nhãn cụ thể (`Species Off-Label` có tỷ lệ tử vong/an tử cao nhất `25.09%`, gấp `3.28` lần chuẩn On-label `7.65%`; `Indication Off-Label` có tỷ lệ nghiêm trọng cao nhất `61.58%`) và phân tích cơ chế khuyết MNAR/MAR ở nhóm `Animal Owner` khuyết nhãn (tử vong `27.23%`).
   - Tinh chỉnh tọa độ nhãn theo đỉnh thanh sai số `m_val + e_val + 0.8` ở `Hình 4.1`, tách hướng `xytext` các điểm sát nhau ở `Hình 4.2a` và mở rộng `ylim` ở `Hình 4.2b` & `Hình 4.3a` để hộp chú giải (Legend) không che khuất dữ liệu; cập nhật đồng bộ tóm tắt phát hiện Q4 vào Master Hub `02_analysis.ipynb`.
 
-### Lần 13 — Rà soát chuyên sâu và hiệu chỉnh Q1 theo phản biện PR #22 (2026-11-26 → 2026-11-28)
+---
+
+### Lần 14 — Rà soát chuyên sâu và hiệu chỉnh Q1 theo phản biện PR #22 (2026-11-26 → 2026-11-28)
 - **Thành viên:** Đinh Công Khang (`24120332`)
 - **Công cụ:** OpenCode (AI coding agent; model `opencode/big-pickle`)
 - **Đã hỏi gì:**
@@ -159,22 +172,11 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
   - Xử lý phản biện vòng 2 của PR #22: khôi phục 5 notebook ngoài phạm vi Q1 về `git merge-base HEAD origin/main` (tránh xung đột với PR #24/#25/#20/#21 đã merge), giữ PR chỉ còn `02_q1_analysis.ipynb` và `LLM_USAGE.md`.
   - Sửa `shorten_term()` để ưu tiên giữ hậu tố phân biệt (`- heartworm`, `- hookworm`, `- flea`) trên legend; mở rộng `xlim` của biểu đồ 1/3 và đặt lại tọa độ nhãn `2026 Q1` theo `ylim` thực tế, đồng thời thêm nhãn trục X cho biểu đồ 2. Chạy lại toàn bộ notebook để cập nhật 3 ảnh PNG.
   - Chú thích rõ `Binomial(n, p_hat)/n` tương đương bootstrap nhị phân có hoàn lại; đối chiếu lại CI Mèo `12,11%` giữa output và markdown.
-  - Đổi số thứ tự mục nhật ký từ 9 sang 13 để tránh trùng các mục 9–12 đã có trên `main`; nếu PR #23 merge sau PR #22, mục của PR #23 cần đổi sang 14.
+  - (Đã chuẩn hóa lại số thứ tự toàn bộ nhật ký liên tục 1–16 theo trình tự thời gian sau khi tất cả PR #20–#25 được merge vào `main`.)
 
 ---
 
-### Lần 9 — Sửa và kiểm chứng pipeline ML Q6 trong NB03 bằng Build mode (2026-11-26)
-- **Thành viên:** Đinh Công Khang (`24120332`)
-- **Công cụ:** ChatGPT Codex (Build mode)
-- **Đã hỏi gì:** Áp dụng trực tiếp năm bản sửa từ phiên phản biện phần học máy Q6 trong `notebooks/03_ml_question.ipynb` và kiểm chứng kết quả trên dữ liệu hiện có.
-- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
-  - Codex trực tiếp sửa mã kiểm định cuốn chiếu theo quý trong năm 2025, tách tập chấm điểm toàn bộ báo cáo Q1/2026 khỏi nhóm có nhãn dùng để tính chỉ số và sửa cờ `has_off_label_use` để nhận trường hợp `used_according_to_label = false`.
-  - Codex trực tiếp sửa phần phân tích và các dòng in kết luận trong notebook. Các sửa đổi gồm dùng tỷ lệ dương trên tập test làm đường cơ sở AP, tính recall và chênh lệch tỷ lệ nhãn từ dữ liệu, thay câu kết luận cố định về xu hướng bằng đối chiếu dự báo cơ sở cùng kỳ theo tuần/tháng và báo cáo số gắn cờ triage riêng.
-  - Codex đối chiếu số lượng và sai số dự báo với CSV, chạy lại các cell huấn luyện và đánh giá bằng Python, rồi kiểm tra riêng hai dòng in AP và recall đã cập nhật. Lần chạy xác nhận 17.182 báo cáo được chấm điểm, trong đó 15.376 có nhãn dùng để đánh giá. Output cũ được xóa khỏi notebook.
-
----
-
-### Lần 10 — Hoàn thiện NB03 theo phản biện PR #23 của LeoTkiet (2026-11-28)
+### Lần 15 — Hoàn thiện NB03 theo phản biện PR #23 của LeoTkiet (2026-11-28)
 - **Thành viên:** Đinh Công Khang (`24120332`)
 - **Công cụ:** OpenCode (model: opencode/big-pickle).
 - **Đã hỏi gì:** Áp dụng trọn vẹn ba nhóm nhận xét trong comment phản biện PR #23 (Mục 2–3) cho `notebooks/03_ml_question.ipynb`: làm liền mạch chuỗi kiểm toán số dòng (10.096 hồ sơ khuyết nhãn và 17.182 hồ sơ được chấm điểm), bổ sung tải lượng triage trên toàn bộ hồ sơ và phục hồi/chuẩn hóa trực quan hóa cùng kết luận định lượng.
@@ -184,6 +186,20 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
   - Cell 9 ép kiểu số đếm về `int`, đổi `error` thành `error_serious_2026_minus_2025`, đổi `serious` thành `n_serious_labeled`, thêm `n_flagged_all_scored` từ `all_scores_2026`, đồng thời khôi phục biểu đồ đường so sánh tuần 2025 Q1 vs 2026 Q1 (có tiêu đề, nhãn trục, đơn vị và chú thích mẫu).
   - Cell 8 và Cell 11 chuẩn hóa nhãn trục tiếng Việt, đưa `n = 15.376` vào tiêu đề, vẽ đường cơ sở AP = 0,4257 trên PR curve và bổ sung nhãn trục Y cho biểu đồ Permutation Importance; kết luận mục 4 in trực tiếp MAE tuần/tháng, chênh lệch tháng 1–3 và tuần 12–13 từ `baseline_errors`.
   - Toàn bộ cell chạy không có lỗi; số liệu định lượng trong output được sinh lại từ dữ liệu và đồng bộ với kết luận trong notebook (có chênh nhẹ so với lần chạy trước do khác phiên bản scikit-learn trong môi trường tái lập).
+
+---
+
+### Lần 16 — Rà soát tổng thể `README.md`, chuẩn hóa thứ tự `LLM_USAGE.md`, cập nhật `environment.yml` & tạo slide thuyết trình (2026-11-29)
+- **Thành viên:** Huỳnh Tuấn Kiệt (`24120356`)
+- **Công cụ:** Google Antigravity
+- **Đã hỏi gì:**
+  - Hỗ trợ dựng bản nháp slide thuyết trình tổng hợp dữ liệu và phân tích Q1–Q6 (xuất bản Canva, PDF và PPTX để nhóm chỉnh sửa).
+  - Rà soát đối chiếu `README.md` theo yêu cầu đề cương môn học và kết quả thực nghiệm cuối cùng trên nhánh `main` (sau khi merge PR #20–#25).
+  - Chuẩn hóa lại thứ tự đánh số trong `LLM_USAGE.md` (khắc phục trùng lặp `Lần 9`, `Lần 10` phát sinh khi merge song song các PR) và rà soát thư viện còn thiếu trong `environment.yml`.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - Bổ sung tóm tắt đầy đủ **Key Findings của Q1–Q5** vào Mục `6.2` và đồng bộ số liệu cuối cùng của **Q6 (PR #23)** (`AP 0.7908`, `ROC-AUC 0.8385`, ngưỡng `0.396`, `Recall 78.99%`, `MAE 89.5 ca/tuần`) vào `README.md`, đối chiếu trực tiếp với output thực tế trong `02_analysis.ipynb` và `03_ml_question.ipynb`.
+  - Sắp xếp theo trình tự thời gian và đánh số liên tục `Lần 1` đến `Lần 16` trong `LLM_USAGE.md`, bảo toàn nguyên văn nội dung khai báo của từng thành viên.
+  - Quét tự động toàn bộ `import` trong `src/` và `notebooks/`, bổ sung `jinja2` (cho `pandas.DataFrame.style`), `nbconvert` và ràng buộc phiên bản tối thiểu (`pandas>=2.0`, `matplotlib>=3.9` cho `tick_labels`, `seaborn>=0.13`, `scikit-learn>=1.4`) vào `environment.yml`.
 
 ---
 
