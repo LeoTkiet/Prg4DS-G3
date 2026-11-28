@@ -147,6 +147,30 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
 
 ---
 
+### Lần 9 — Sửa và kiểm chứng pipeline ML Q6 trong NB03 bằng Build mode (2026-11-26)
+- **Thành viên:** Đinh Công Khang (`24120332`)
+- **Công cụ:** ChatGPT Codex (Build mode)
+- **Đã hỏi gì:** Áp dụng trực tiếp năm bản sửa từ phiên phản biện phần học máy Q6 trong `notebooks/03_ml_question.ipynb` và kiểm chứng kết quả trên dữ liệu hiện có.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - Codex trực tiếp sửa mã kiểm định cuốn chiếu theo quý trong năm 2025, tách tập chấm điểm toàn bộ báo cáo Q1/2026 khỏi nhóm có nhãn dùng để tính chỉ số và sửa cờ `has_off_label_use` để nhận trường hợp `used_according_to_label = false`.
+  - Codex trực tiếp sửa phần phân tích và các dòng in kết luận trong notebook. Các sửa đổi gồm dùng tỷ lệ dương trên tập test làm đường cơ sở AP, tính recall và chênh lệch tỷ lệ nhãn từ dữ liệu, thay câu kết luận cố định về xu hướng bằng đối chiếu dự báo cơ sở cùng kỳ theo tuần/tháng và báo cáo số gắn cờ triage riêng.
+  - Codex đối chiếu số lượng và sai số dự báo với CSV, chạy lại các cell huấn luyện và đánh giá bằng Python, rồi kiểm tra riêng hai dòng in AP và recall đã cập nhật. Lần chạy xác nhận 17.182 báo cáo được chấm điểm, trong đó 15.376 có nhãn dùng để đánh giá. Output cũ được xóa khỏi notebook.
+
+---
+
+### Lần 10 — Hoàn thiện NB03 theo phản biện PR #23 của LeoTkiet (2026-11-28)
+- **Thành viên:** Đinh Công Khang (`24120332`)
+- **Công cụ:** OpenCode (model: opencode/big-pickle).
+- **Đã hỏi gì:** Áp dụng trọn vẹn ba nhóm nhận xét trong comment phản biện PR #23 (Mục 2–3) cho `notebooks/03_ml_question.ipynb`: làm liền mạch chuỗi kiểm toán số dòng (10.096 hồ sơ khuyết nhãn và 17.182 hồ sơ được chấm điểm), bổ sung tải lượng triage trên toàn bộ hồ sơ và phục hồi/chuẩn hóa trực quan hóa cùng kết luận định lượng.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - AI rà soát comment review và đối chiếu trực tiếp từng cell của NB03 trước khi đề xuất sửa; nhóm kiểm chứng lại bằng cách chạy lại toàn bộ notebook (Restart & Run All) và đọc output thực tế.
+  - Cell 4 bổ sung `ML_label_filter` (93.812 → 83.716, ghi rõ 8.290 ca 2025 + 1.806 ca 2026 Q1), `ML_score_2026Q1` (15.376 → 17.182) và bảng tổng hợp theo quý với `n_reports`, `n_labeled`, `n_missing_label`, `n_scored`; các con số được tính từ dữ liệu thay vì ghi cứng.
+  - Cell 9 ép kiểu số đếm về `int`, đổi `error` thành `error_serious_2026_minus_2025`, đổi `serious` thành `n_serious_labeled`, thêm `n_flagged_all_scored` từ `all_scores_2026`, đồng thời khôi phục biểu đồ đường so sánh tuần 2025 Q1 vs 2026 Q1 (có tiêu đề, nhãn trục, đơn vị và chú thích mẫu).
+  - Cell 8 và Cell 11 chuẩn hóa nhãn trục tiếng Việt, đưa `n = 15.376` vào tiêu đề, vẽ đường cơ sở AP = 0,4257 trên PR curve và bổ sung nhãn trục Y cho biểu đồ Permutation Importance; kết luận mục 4 in trực tiếp MAE tuần/tháng, chênh lệch tháng 1–3 và tuần 12–13 từ `baseline_errors`.
+  - Toàn bộ cell chạy không có lỗi; số liệu định lượng trong output được sinh lại từ dữ liệu và đồng bộ với kết luận trong notebook (có chênh nhẹ so với lần chạy trước do khác phiên bản scikit-learn trong môi trường tái lập).
+
+---
+
 ## Mẫu ghi nhận cho các phiên tiếp theo
 
 ```markdown
