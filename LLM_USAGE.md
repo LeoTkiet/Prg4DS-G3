@@ -145,6 +145,22 @@ Tài liệu này ghi nhận toàn bộ các lần sử dụng công cụ AI/LLM 
   - Chuyển phép tính $p$-value Wald sang `2.0 * scipy.stats.norm.sf(abs(z))` để tránh hiện tượng tràn số dưới (underflow về `0.00e+00`) khi $|z|$ lớn, đồng thời bổ sung bảng phân rã 7 hành vi sai nhãn cụ thể (`Species Off-Label` có tỷ lệ tử vong/an tử cao nhất `25.09%`, gấp `3.28` lần chuẩn On-label `7.65%`; `Indication Off-Label` có tỷ lệ nghiêm trọng cao nhất `61.58%`) và phân tích cơ chế khuyết MNAR/MAR ở nhóm `Animal Owner` khuyết nhãn (tử vong `27.23%`).
   - Tinh chỉnh tọa độ nhãn theo đỉnh thanh sai số `m_val + e_val + 0.8` ở `Hình 4.1`, tách hướng `xytext` các điểm sát nhau ở `Hình 4.2a` và mở rộng `ylim` ở `Hình 4.2b` & `Hình 4.3a` để hộp chú giải (Legend) không che khuất dữ liệu; cập nhật đồng bộ tóm tắt phát hiện Q4 vào Master Hub `02_analysis.ipynb`.
 
+### Lần 13 — Rà soát chuyên sâu và hiệu chỉnh Q1 theo phản biện PR #22 (2026-11-26 → 2026-11-28)
+- **Thành viên:** Đinh Công Khang (`24120332`)
+- **Công cụ:** OpenCode (AI coding agent; model `opencode/big-pickle`)
+- **Đã hỏi gì:**
+  - Nhờ đóng vai reviewer Data Science cấp cao, chỉ báo cáo vấn đề thật trong `notebooks/02_q1_analysis.ipynb` theo định dạng: mức độ nghiêm trọng, dòng code, đầu vào/tình huống gây ra, và diff tối thiểu.
+  - Sau đó yêu cầu áp dụng các phát hiện đó; đồng thời khôi phục 2 cell code đầu về đúng template gốc với đường dẫn `data/processed/clean`, thêm dòng lựa chọn phương pháp trong Mục 2 và ghi nhận lần sử dụng AI vào `LLM_USAGE.md`.
+- **Đã sử dụng hoặc chỉnh sửa câu trả lời thế nào:**
+  - Không áp dụng ngay nhận xét: chạy lại notebook và kiểm chứng từng phát hiện trên dữ liệu thực (9.719 báo cáo `With no Adverse Events`, 58 bản ghi `Other` không rõ loài, mẫu số robustness của `Other` 9.809 → 1.796, v.v.) trước khi quyết định sửa.
+  - Áp dụng diff có biên tập: gộp bộ lọc vào cell tiền xử lý kèm log số dòng; thêm `n_all`/`n_no_defect` vào bảng robustness; đổi lệnh `display()` để liệt kê đủ Top 10; giữ nguyên chữ ký 12 cell, metadata và 2 cell code đầu của template.
+  - Phát hiện vấn đề phát sinh sau khi lọc (ô kỳ vọng χ² của `Other` chỉ 2,3) nên điều chỉnh còn 6 term cho riêng nhóm này, chạy lại toàn bộ 5 cell code và viết lại markdown kết quả theo số liệu output thực tế (`Lack of efficacy - NOS` 596/1.814 = 32,86%; χ² p = 0,133).
+  - Đối chiếu với `git show HEAD:notebooks/02_q1_analysis.ipynb` để xác nhận cấu trúc/metadata không đổi; chỉ ghi nhận vào nhật ký những nội dung đã kiểm chứng bằng thực thi và số liệu thực tế.
+  - Xử lý phản biện vòng 2 của PR #22: khôi phục 5 notebook ngoài phạm vi Q1 về `git merge-base HEAD origin/main` (tránh xung đột với PR #24/#25/#20/#21 đã merge), giữ PR chỉ còn `02_q1_analysis.ipynb` và `LLM_USAGE.md`.
+  - Sửa `shorten_term()` để ưu tiên giữ hậu tố phân biệt (`- heartworm`, `- hookworm`, `- flea`) trên legend; mở rộng `xlim` của biểu đồ 1/3 và đặt lại tọa độ nhãn `2026 Q1` theo `ylim` thực tế, đồng thời thêm nhãn trục X cho biểu đồ 2. Chạy lại toàn bộ notebook để cập nhật 3 ảnh PNG.
+  - Chú thích rõ `Binomial(n, p_hat)/n` tương đương bootstrap nhị phân có hoàn lại; đối chiếu lại CI Mèo `12,11%` giữa output và markdown.
+  - Đổi số thứ tự mục nhật ký từ 9 sang 13 để tránh trùng các mục 9–12 đã có trên `main`; nếu PR #23 merge sau PR #22, mục của PR #23 cần đổi sang 14.
+
 ---
 
 ### Lần 9 — Sửa và kiểm chứng pipeline ML Q6 trong NB03 bằng Build mode (2026-11-26)
